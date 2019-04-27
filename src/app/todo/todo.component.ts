@@ -42,7 +42,7 @@ let LIST_DATA: any = [
   styleUrls: ['./todo.component.scss']
 })
 export class TodoComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
+  displayedColumns: string[] = ['select', 'position', 'task'];
   dataSource = new MatTableDataSource<any>(LIST_DATA);
   selection = new SelectionModel<any>(true, []);
 
@@ -59,8 +59,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
       this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
-  nzClick() {
-    console.log('nz click')
+  nzClick(e?) {
+    console.log('nz click', e)
   }
 
   /** The label for the checkbox on the passed row */
