@@ -39,4 +39,11 @@ div#add-category-container {
 
 .strikethrough {
   text-decoration: line-through;
+  color: lightgray;
+  // background-color: rgba(0,0,0,0.1);
+  // color: lightgray;
+}
+
+.btnCompleted {
+  color: lightgray;
 }

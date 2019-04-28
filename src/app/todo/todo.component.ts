@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, ContentChild, ContentChildren, QueryList, ElementRef } from '@angular/core';
-import { random as _random, remove as _remove, max as _max, includes as _includes } from 'lodash'
+import { random as _random, remove as _remove, max as _max, includes as _includes, sortBy as _sortBy, each as _each } from 'lodash'
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel, DataSource } from '@angular/cdk/collections';
 
@@ -13,6 +13,7 @@ export interface PeriodicElement {
 export interface TodoTask {
 	position: number
 	task: string
+	completed?: boolean
 }
 
 let ELEMENT_DATA: any = [
@@ -122,14 +123,38 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const selectedElements: TodoTask[] = this.selection.selected
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
 
+		// Loop through all rows
 		const rowPositionVal: ElementRef[] = this.positionRows.filter(row => {
 			const rowPositionVal = parseInt(row.nativeElement.innerText)
 			return _includes(selectedElementsPosition, rowPositionVal)
 		})
-		console.log(rowPositionVal, 'xxxx')
-		// Loop through all rows
-		// this.positionRows
+
+
 		// Apply class to these selected items
+		// rowPositionVal.map(item => {
+		// 	// return item.nativeElement.className 
+		// })
+
+		const newData: any = [...LIST_DATA]
+		newData.filter(t => _includes(selectedElementsPosition, parseInt(t.position)))
+			.forEach(el => {
+				el.completed = true
+			});
+		// console.log(styleUpdatedRows, '222')
+		// this.dataSource.data = styleUpdatedRows
+		// this.dataSource.data = [
+		// 	{ position: 1, task: 'a task for the beach', completed: true },
+		// 	{ position: 2, task: 'a task for the beach' },
+		// 	{ position: 3, task: 'a task for the beach' },
+		// 	{ position: 4, task: 'a task for the beach' },
+		// 	{ position: 5, task: 'a task for the beach' },
+		// 	{ position: 6, task: 'a task for the beach' },
+		// 	{ position: 7, task: 'a task for the beach' },
+		// 	{ position: 8, task: 'a task for the beach' },
+		// 	{ position: 9, task: 'a task for the beach' },
+		// 	{ position: 10, task: 'a task for the beach' },
+		// ]
+
 	}
 
 	/** The label for the checkbox on the passed row */
