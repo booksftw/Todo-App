@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, ContentChild, ContentChildren, QueryList } from '@angular/core';
-import { random as _random, remove as _remove } from 'lodash'
+import { random as _random, remove as _remove, max as _max } from 'lodash'
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel, DataSource } from '@angular/cdk/collections';
 
@@ -43,7 +43,8 @@ let LIST_DATA: any = [
 })
 export class TodoComponent implements OnInit, AfterViewInit {
 	@ViewChildren('contentEditable') todoTasks: QueryList<any>
-	displayedColumns: string[] = ['select', 'position', 'task'];
+	@ViewChild('newTaskInput') newTaskInput: any;
+	displayedColumns: string[] = ['select', 'position', 'task', 'remove'];
 	dataSource = new MatTableDataSource<any>(LIST_DATA);
 	selection = new SelectionModel<any>(true, []);
 
@@ -57,8 +58,40 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const listData = [...LIST_DATA]
 		listData.filter(t => t.position === taskPositionId)[0].task = activeTaskValue
 
-		// Save persistent data
+		// Save persistent data here
+
+		// Update App View
 		this.dataSource.data = listData
+	}
+
+	onNewTaskSubmit() {
+		console.log('Ello mate', this.newTaskInput.nativeElement.value)
+		const task = this.newTaskInput.nativeElement.value
+		let newPositionId: number = _max(LIST_DATA.map(t => t.position))
+		const position: number = newPositionId + 1
+		const newTaskObject = { position, task }
+
+		// Add new task to list
+		LIST_DATA = [newTaskObject, ...LIST_DATA]
+		console.log(this.dataSource.data, newTaskObject, '<<<<')
+
+		// Save persistent data here
+
+		// Update App View
+		this.dataSource.data = LIST_DATA;
+	}
+
+	removeTask(elPosition: number) {
+		console.log('remove task', elPosition)
+		const listData = [...LIST_DATA]
+		LIST_DATA = listData.filter(t => {
+			return t.position !== elPosition
+		})
+
+		//Save persistent data here
+
+		// Update App View
+		this.dataSource.data = LIST_DATA
 	}
 
 	/** Whether the number of selected elements matches the total number of rows. */
