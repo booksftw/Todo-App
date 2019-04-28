@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, ContentChild
 import { random as _random, remove as _remove, max as _max, includes as _includes, sortBy as _sortBy, each as _each } from 'lodash'
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel, DataSource } from '@angular/cdk/collections';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 
 export interface PeriodicElement {
 	name: string;
@@ -54,6 +55,36 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	displayedColumns: string[] = ['select', 'position', 'task', 'remove'];
 	dataSource = new MatTableDataSource<TodoTask>(LIST_DATA);
 	selection = new SelectionModel<any>(true, []);
+
+	private itemsCollection: AngularFirestoreCollection<any>;
+
+
+	constructor(private db: AngularFirestore) {
+	}
+
+	addTaskToDB() {
+		// const newTask: TodoTask = { position: 2, task: 'a task for the beach' }
+		// LIST_DATA.forEach(t => this.itemsCollection.add(newTask))
+	}
+
+	ngOnInit() {
+		this.itemsCollection = this.db.collection('categoryTable')
+		const itemsDoc = this.db.doc('')
+		console.log(itemsDoc)
+		// .subscribe(e => console.log(e.docs))
+		this.itemsCollection.valueChanges().subscribe(e => console.log(e))
+
+		this.addTaskToDB()
+		// this.itemsCollection.snapshotChanges()
+		// 	.subscribe(docs => {
+		// 		docs.map(el => {
+		// 			// console.log('el', el.payload.doc.data())
+		// 		})
+		// 	})
+	}
+
+	ngAfterViewInit() {
+	}
 
 	onTypeUpdateTodo(taskPositionId?) {
 		let todoTasks = this.todoTasks.toArray()
@@ -117,9 +148,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			this.dataSource.data.forEach(row => this.selection.select(row));
 	}
 
-	nzClick(e?) {
+	onRowSelection(e?) {
 
-		// Todo: For these elements, you add the strikethrough class.
 		const selectedElements: TodoTask[] = this.selection.selected
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
 
@@ -129,32 +159,11 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			return _includes(selectedElementsPosition, rowPositionVal)
 		})
 
-
-		// Apply class to these selected items
-		// rowPositionVal.map(item => {
-		// 	// return item.nativeElement.className 
-		// })
-
 		const newData: any = [...LIST_DATA]
 		newData.filter(t => _includes(selectedElementsPosition, parseInt(t.position)))
 			.forEach(el => {
 				el.completed = true
 			});
-		// console.log(styleUpdatedRows, '222')
-		// this.dataSource.data = styleUpdatedRows
-		// this.dataSource.data = [
-		// 	{ position: 1, task: 'a task for the beach', completed: true },
-		// 	{ position: 2, task: 'a task for the beach' },
-		// 	{ position: 3, task: 'a task for the beach' },
-		// 	{ position: 4, task: 'a task for the beach' },
-		// 	{ position: 5, task: 'a task for the beach' },
-		// 	{ position: 6, task: 'a task for the beach' },
-		// 	{ position: 7, task: 'a task for the beach' },
-		// 	{ position: 8, task: 'a task for the beach' },
-		// 	{ position: 9, task: 'a task for the beach' },
-		// 	{ position: 10, task: 'a task for the beach' },
-		// ]
-
 	}
 
 	/** The label for the checkbox on the passed row */
@@ -169,19 +178,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		let newArr;
 		newArr = data.filter((e) => e.position !== index)
 		return newArr
-	}
-
-	ngAfterViewInit() {
-		setTimeout(_ => {
-			console.log(this.selection.selected)
-			console.log(this.checkboxLabel())
-		}, 3000)
-		// setInterval(_ => {
-		//   this.dataSource.data = this.removeIndex(_random(0, ELEMENT_DATA.length - 1), ELEMENT_DATA)
-		// }, 4000)
-	}
-
-	ngOnInit() {
 	}
 
 }
