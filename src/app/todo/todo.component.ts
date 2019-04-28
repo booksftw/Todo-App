@@ -66,6 +66,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	addTaskToDB() {
 		// const newTask: TodoTask = { position: 2, task: 'a task for the beach' }
 		// LIST_DATA.forEach(t => this.itemsCollection.add(newTask))
+		// USE THE UPDATED VIEW METHODS AND IMPLEMENT THE DB 
 	}
 
 	updateTaskFromDb(docId: number) {
@@ -117,17 +118,16 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	onNewTaskSubmit() {
-		console.log('Ello mate', this.newTaskInput.nativeElement.value)
 		const task = this.newTaskInput.nativeElement.value
 		let newPositionId: number = _max(LIST_DATA.map(t => t.position))
 		const position: number = newPositionId + 1
 		const newTaskObject = { position, task }
 
 		// Add new task to list
-		LIST_DATA = [newTaskObject, ...LIST_DATA]
-		console.log(this.dataSource.data, newTaskObject, '<<<<')
+		// LIST_DATA = [newTaskObject, ...LIST_DATA]
+		LIST_DATA = [newTaskObject, ...this.dataSource.data]
 
-		// Save persistent data here
+		// Todo: Save TO DB HERE
 
 		// Update App View
 		this.dataSource.data = LIST_DATA;
@@ -163,6 +163,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	onRowSelection(e?) {
+		console.log('row e', e)
+		// Fires everytime the checkbox is clicked
 
 		const selectedElements: TodoTask[] = this.selection.selected
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
@@ -173,8 +175,10 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			return _includes(selectedElementsPosition, rowPositionVal)
 		})
 
-		const newData: any = [...LIST_DATA]
+		// const newData: any = [...LIST_DATA]
+		const newData: any = [...this.dataSource.data]
 		// Still need to set up a deselect styling to reset the cross
+
 		// Going to set up the persistent data then come back to this
 		newData.filter(t => _includes(selectedElementsPosition, parseInt(t.position)))
 			.forEach(el => {
