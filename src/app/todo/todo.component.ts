@@ -1,5 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, ContentChild, ContentChildren, QueryList } from '@angular/core';
-import { random as _random, remove as _remove, max as _max } from 'lodash'
+import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, ContentChild, ContentChildren, QueryList, ElementRef } from '@angular/core';
+import { random as _random, remove as _remove, max as _max, includes as _includes } from 'lodash'
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel, DataSource } from '@angular/cdk/collections';
 
@@ -8,6 +8,11 @@ export interface PeriodicElement {
 	position: number;
 	weight: number;
 	symbol: string;
+}
+
+export interface TodoTask {
+	position: number
+	task: string
 }
 
 let ELEMENT_DATA: any = [
@@ -23,7 +28,7 @@ let ELEMENT_DATA: any = [
 	{ position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
 ];
 
-let LIST_DATA: any = [
+let LIST_DATA: TodoTask[] = [
 	{ position: 1, task: 'a task for the beach' },
 	{ position: 2, task: 'a task for the beach' },
 	{ position: 3, task: 'a task for the beach' },
@@ -44,8 +49,9 @@ let LIST_DATA: any = [
 export class TodoComponent implements OnInit, AfterViewInit {
 	@ViewChildren('contentEditable') todoTasks: QueryList<any>
 	@ViewChild('newTaskInput') newTaskInput: any;
+	@ViewChildren('positionRows') positionRows: QueryList<any>;
 	displayedColumns: string[] = ['select', 'position', 'task', 'remove'];
-	dataSource = new MatTableDataSource<any>(LIST_DATA);
+	dataSource = new MatTableDataSource<TodoTask>(LIST_DATA);
 	selection = new SelectionModel<any>(true, []);
 
 	onTypeUpdateTodo(taskPositionId?) {
@@ -111,7 +117,19 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	nzClick(e?) {
-		console.log('nz click', e)
+
+		// Todo: For these elements, you add the strikethrough class.
+		const selectedElements: TodoTask[] = this.selection.selected
+		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
+
+		const rowPositionVal: ElementRef[] = this.positionRows.filter(row => {
+			const rowPositionVal = parseInt(row.nativeElement.innerText)
+			return _includes(selectedElementsPosition, rowPositionVal)
+		})
+		console.log(rowPositionVal, 'xxxx')
+		// Loop through all rows
+		// this.positionRows
+		// Apply class to these selected items
 	}
 
 	/** The label for the checkbox on the passed row */
@@ -129,7 +147,10 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	ngAfterViewInit() {
-		setTimeout(_ => console.log(this.checkboxLabel()), 3000)
+		setTimeout(_ => {
+			console.log(this.selection.selected)
+			console.log(this.checkboxLabel())
+		}, 3000)
 		// setInterval(_ => {
 		//   this.dataSource.data = this.removeIndex(_random(0, ELEMENT_DATA.length - 1), ELEMENT_DATA)
 		// }, 4000)
