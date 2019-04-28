@@ -53,7 +53,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	@ViewChild('newTaskInput') newTaskInput: any;
 	@ViewChildren('positionRows') positionRows: QueryList<any>;
 	displayedColumns: string[] = ['select', 'position', 'task', 'remove'];
-	dataSource = new MatTableDataSource<TodoTask>(LIST_DATA);
+	// dataSource = new MatTableDataSource<TodoTask>(LIST_DATA);
+	dataSource = new MatTableDataSource<TodoTask>();
 	selection = new SelectionModel<any>(true, []);
 
 	private itemsCollection: AngularFirestoreCollection<any>;
@@ -68,7 +69,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	updateTaskFromDb(docId: number) {
-
+		// Update the db
 	}
 
 	removeTaskFromDb(docId: number) {
@@ -82,10 +83,10 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// * You have the data coming from the database.
 		// * Now you need to get the document ids and update and add and remove properly from the db.
 		// * You'll probably have to make the incoming data the immutable data instead of the LIST_DATA
-		// this.itemsCollection.valueChanges().subscribe((t: TodoTask[]) => {
-		// 	console.log(t)
-		// 	this.dataSource.data = t
-		// })
+		this.itemsCollection.valueChanges().subscribe((t: TodoTask[]) => {
+			console.log(t)
+			this.dataSource.data = t
+		})
 
 		// this.addTaskToDB()
 		// this.itemsCollection.snapshotChanges()
@@ -165,8 +166,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
 		const selectedElements: TodoTask[] = this.selection.selected
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
-
-
 
 		// Loop through all rows
 		const rowPositionVal: ElementRef[] = this.positionRows.filter(row => {
