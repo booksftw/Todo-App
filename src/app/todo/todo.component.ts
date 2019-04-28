@@ -162,8 +162,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			this.dataSource.data.forEach(row => this.selection.select(row));
 	}
 
-	onRowSelection(e?) {
-		console.log('row e', e)
+	onRowSelection(row) {
+		console.log('row e', row)
 		// Fires everytime the checkbox is clicked
 
 		const selectedElements: TodoTask[] = this.selection.selected
