@@ -67,14 +67,27 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// LIST_DATA.forEach(t => this.itemsCollection.add(newTask))
 	}
 
+	updateTaskFromDb(docId: number) {
+
+	}
+
+	removeTaskFromDb(docId: number) {
+		// Remove Task From Db
+	}
+
 	ngOnInit() {
 		this.itemsCollection = this.db.collection('categoryTable')
-		const itemsDoc = this.db.doc('')
-		console.log(itemsDoc)
-		// .subscribe(e => console.log(e.docs))
-		this.itemsCollection.valueChanges().subscribe(e => console.log(e))
 
-		this.addTaskToDB()
+		// !Left off here
+		// * You have the data coming from the database.
+		// * Now you need to get the document ids and update and add and remove properly from the db.
+		// * You'll probably have to make the incoming data the immutable data instead of the LIST_DATA
+		// this.itemsCollection.valueChanges().subscribe((t: TodoTask[]) => {
+		// 	console.log(t)
+		// 	this.dataSource.data = t
+		// })
+
+		// this.addTaskToDB()
 		// this.itemsCollection.snapshotChanges()
 		// 	.subscribe(docs => {
 		// 		docs.map(el => {
@@ -153,6 +166,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const selectedElements: TodoTask[] = this.selection.selected
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
 
+
+
 		// Loop through all rows
 		const rowPositionVal: ElementRef[] = this.positionRows.filter(row => {
 			const rowPositionVal = parseInt(row.nativeElement.innerText)
@@ -160,6 +175,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		})
 
 		const newData: any = [...LIST_DATA]
+		// Still need to set up a deselect styling to reset the cross
+		// Going to set up the persistent data then come back to this
 		newData.filter(t => _includes(selectedElementsPosition, parseInt(t.position)))
 			.forEach(el => {
 				el.completed = true
