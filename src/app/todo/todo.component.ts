@@ -79,6 +79,9 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
 		// Update App View
 		this.dataSource.data = LIST_DATA;
+
+		// Reset input
+		this.newTaskInput.nativeElement.value = ''
 	}
 
 	removeTask(elPosition: number) {
