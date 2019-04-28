@@ -169,21 +169,15 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const selectedElements: TodoTask[] = this.selection.selected
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
 
-		// Loop through all rows
-		const rowPositionVal: ElementRef[] = this.positionRows.filter(row => {
-			const rowPositionVal = parseInt(row.nativeElement.innerText)
-			return _includes(selectedElementsPosition, rowPositionVal)
-		})
+		// Is row in selectedElementsPosition
+		const rowPositionId: number = row.position;
+		const rowIsSelected: boolean = _includes(selectedElementsPosition, rowPositionId)
 
-		// const newData: any = [...LIST_DATA]
-		const newData: any = [...this.dataSource.data]
-		// Still need to set up a deselect styling to reset the cross
 
-		// Going to set up the persistent data then come back to this
-		newData.filter(t => _includes(selectedElementsPosition, parseInt(t.position)))
-			.forEach(el => {
-				el.completed = true
-			});
+		// update view:
+		// this.dataSource.data = new
+
+		// update db:
 	}
 
 	/** The label for the checkbox on the passed row */
