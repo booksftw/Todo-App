@@ -6,6 +6,8 @@ import {
 import { MatTableDataSource } from '@angular/material'
 import { SelectionModel, DataSource } from '@angular/cdk/collections'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
+import { map } from 'rxjs/operators'
+
 
 export interface PeriodicElement {
 	name: string
@@ -61,10 +63,35 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	selection = new SelectionModel<any>(true, [])
 
 	private itemsCollection: AngularFirestoreCollection<any>
+	items: any;
 
 
 	constructor(private db: AngularFirestore) {
 		this.itemsCollection = this.db.collection('categoryTable')
+
+		// *Old Reference Notes
+		// This doesn't work because when I subscribe this becomes a subscription. 
+		// I need to shape the observable with the date I want
+		////
+		// this.items = this.itemsCollection.snapshotChanges().subscribe(e => {
+		// 	console.log(e[0].payload, '@@@', e)
+		// 	return e.map(el => {
+		// 		const payloadData = el.payload.doc.data()
+		// 		const id = el.payload.doc.id
+		// 		return [id, ...payloadData]
+		// 	})
+		// })
+
+		this.items = this.itemsCollection.snapshotChanges().pipe(
+			map(e => {
+				return e.map(el => {
+					const payloadData = el.payload.doc.data()
+					const position = payloadData.position
+					const id = el.payload.doc.id
+					return [id, position, ...payloadData]
+				})
+			})
+		).subscribe(console.log)
 	}
 
 	updateTaskFromDb(docId: number) {
@@ -95,6 +122,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	ngAfterViewInit() {
+		// setTimeout(_ => console.log(this.items), 3000)
 	}
 
 	onTypeUpdateTodo(taskPositionId?) {
@@ -135,7 +163,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	removeTask(elPosition: number) {
-		console.log('remove task', elPosition)
+		// console.log('remove task', elPosition)
 		const listData = [...LIST_DATA]
 		LIST_DATA = listData.filter(t => {
 			return t.position !== elPosition
@@ -180,21 +208,14 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// update db:
 		// CALL UPDATE DB
 		// Get id from collections for this doc
-		this.itemsCollection.snapshotChanges().subscribe(e => {
-			console.log(e[0].payload, '@@@', e)
-			const collectionData = e.map(el => {
-				const payloadData = el.payload.doc.data()
-				const id = el.payload.doc.id
-				// console.log('id', id, 'payloadData', payloadData)
-				return [id, ...payloadData]
-			})
-			console.log('col data', collectionData)
 
-		})
+		// console.log('col data', collectionData)
+
 		// Get the doc that matches this row element
 		// this.itemsCollection.doc('')
 		// Update that doc with the new completed state
 	}
+
 
 	/** The label for the checkbox on the passed row */
 	checkboxLabel(row?: any): string {
