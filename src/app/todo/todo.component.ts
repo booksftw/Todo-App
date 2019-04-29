@@ -6,7 +6,7 @@ import {
 import { MatTableDataSource } from '@angular/material'
 import { SelectionModel, DataSource } from '@angular/cdk/collections'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
-import { map } from 'rxjs/operators'
+import { map, filter, switchMap } from 'rxjs/operators'
 import { Observable, Subscription } from 'rxjs';
 
 export interface TodoTask {
@@ -17,7 +17,7 @@ export interface TodoTask {
 
 export interface CategoryTablePayloadContainer {
 	firebaseId: string
-	positionId: number
+	position: number
 	task: TodoTask
 }
 
@@ -50,7 +50,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	selection = new SelectionModel<any>(true, [])
 
 	private itemsCollection: AngularFirestoreCollection<any>
-	items: Observable<CategoryTablePayloadContainer[][]>;
+	items: Observable<CategoryTablePayloadContainer[]>;
 	// items: Subscription<CategoryTablePayloadContainer[][]>;
 
 	constructor(private db: AngularFirestore) {
@@ -62,8 +62,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 				return e.map(el => {
 					const payloadData = el.payload.doc.data()
 					const position = payloadData.position
-					const id = el.payload.doc.id
-					return [id, position, ...payloadData]
+					const firebaseId = el.payload.doc.id
+					return { firebaseId, position, ...payloadData }
 				})
 			})
 		)
@@ -182,12 +182,23 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		})
 
 		// Todo: Get the id from items observable and then use it in this inner observable to
-		// * identify the doc and then update.
-
+		// * identify the doc and then update. Consider mergemap instead of switchMap.
+		this.items
+			.pipe(
+				map(e => {
+					return e.filter(el => el.position === rowPositionId)
+				})
+			)
+			.pipe(
+				switchMap((r: CategoryTablePayloadContainer[]) => {
+					console.log(r[0])
+					this.itemsCollection.doc(r[0].firebaseId).update({ task: 'Yo SUCCESS', completed: true })
+					return r
+				})
+			)
+			.subscribe(res => console.log('res', res))
 		// update db:
-		this.itemsCollection.doc('2TKsU5klUAc8UPvt58in').update({ task: 'UPDATE SUCCESS' })
-
-		// Fix the static typing
+		// this.itemsCollection.doc('2TKsU5klUAc8UPvt58in').update({ task: 'UPDATE SUCCESS' })
 	}
 
 
