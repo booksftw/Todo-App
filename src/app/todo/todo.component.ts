@@ -45,20 +45,16 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	@ViewChild('newTaskInput') newTaskInput: any
 	@ViewChildren('positionRows') positionRows: QueryList<any>
 	displayedColumns: string[] = ['select', 'position', 'task', 'remove']
-	// dataSource = new MatTableDataSource<TodoTask>(LIST_DATA)
 	dataSource = new MatTableDataSource<TodoTask>()
-	// selection = new SelectionModel<any>(true, [])
 	selection = new SelectionModel<any>(true)
 
 	private itemsCollection: AngularFirestoreCollection<any>
-	// items: Observable<CategoryTablePayloadContainer[]>;
 	items: Subscription
 	localItems: CategoryTablePayloadContainer[] = []
 
 	constructor(private db: AngularFirestore) {
 		this.itemsCollection = this.db.collection('categoryTable')
 
-		// Subscription here for personal note - remove in production
 		this.items = this.itemsCollection.snapshotChanges().pipe(
 			map(e => {
 				return e.map(el => {
@@ -82,7 +78,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	ngOnInit() {
-
 		// Todo
 		// * You have the data coming from the database.
 		// * Now you need to get the document ids and update and add and remove properly from the db.
@@ -96,28 +91,17 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			this.selection.select(this.dataSource.data[2])
 		})
 
-		// this.items.subscribe(res => console.log('on init res', res))
-
-		// this.addTaskToDB()
-		// this.itemsCollection.snapshotChanges()
-		// 	.subscribe(docs => {
-		// 		docs.map(el => {
-		// 			// console.log('el', el.payload.doc.data())
-		// 		})
-		// 	})
 	}
 
 	ngAfterViewInit() {
-		// setTimeout(_ => console.log(this.items), 3000)
 	}
 
 	onTypeUpdateTodo(taskPositionId?) {
 		let todoTasks = this.todoTasks.toArray()
-		// The task that is being typed in
+
 		const activeTaskValue = todoTasks.map(el => el.nativeElement)
 			.filter(el => parseInt(el.id) === taskPositionId)[0].innerText
 
-		// Replace the activeTaskValue with the oldArray and give it the new array
 		const listData = [...LIST_DATA]
 		listData.filter(t => t.position === taskPositionId)[0].task = activeTaskValue
 
@@ -176,11 +160,9 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
 	onRowSelection(row) {
 		// Fires everytime the checkbox is clicked
-
 		const selectedElements: TodoTask[] = this.selection.selected
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
 
-		// Is row in selectedElementsPosition
 		const rowPositionId: number = row.position
 		const rowIsSelected: boolean = _includes(selectedElementsPosition, rowPositionId)
 
@@ -191,34 +173,12 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			return t
 		})
 
-		console.log('clicked checkbox')
-		// Todo: Get the id from items observable and then use it in this inner observable to
-		// * identify the doc and then update. Consider mergemap instead of switchMap.
-		// const x = this.items
-		// 	.pipe(
-		// 		map(e => {
-		// 			return e.filter(el => el.position === rowPositionId)
-		// 		})
-		// 	)
-		// 	.pipe(
-		// 		mergeMap((r: CategoryTablePayloadContainer[]) => {
-		// 			console.log(r[0])
-		// 			this.itemsCollection.doc(r[0].firebaseId).update({ task: 'Ello Mate', completed: true })
-		// 			return r
-		// 		})
-		// 	)
-
 		const selectedRowFirebaseId: string = this.localItems
 			.filter(e => e.position === rowPositionId)
 			.map(e => e.firebaseId)[0]
 
-		this.itemsCollection.doc(selectedRowFirebaseId).update({ task: 'UPDATE SUCCESS' })
-
-
-
-
 		// update db:
-		// this.itemsCollection.doc('2TKsU5klUAc8UPvt58in').update({ task: 'UPDATE SUCCESS' })
+		this.itemsCollection.doc(selectedRowFirebaseId).update({ task: 'UPDATE SUCCESS' })
 	}
 
 
