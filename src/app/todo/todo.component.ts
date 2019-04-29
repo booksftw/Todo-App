@@ -54,7 +54,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
 	constructor(private db: AngularFirestore) {
 		this.itemsCollection = this.db.collection('categoryTable')
-
 		this.items = this.itemsCollection.snapshotChanges().pipe(
 			map(e => {
 				return e.map(el => {
@@ -78,17 +77,12 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	ngOnInit() {
-		// Todo
-		// * You have the data coming from the database.
-		// * Now you need to get the document ids and update and add and remove properly from the db.
-		// * You'll probably have to make the incoming data the immutable data instead of the LIST_DATA
+		// Update View
 		this.itemsCollection.valueChanges().subscribe((t: TodoTask[]) => {
 			this.dataSource.data = t
-
-
-			// ! LEFT OFF HERE
-			// * THIS UPDATES THE STATE OF THE SELECTION FOR THE ANGULAR MATERIAL TABLE
-			this.selection.select(this.dataSource.data[2])
+			t.map((e, i) => {
+				e.completed ? this.selection.select(this.dataSource.data[i]) : null
+			})
 		})
 
 	}
@@ -153,32 +147,45 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 	/** Selects all rows if they are not all selected otherwise clear selection. */
 	masterToggle() {
-		this.isAllSelected() ?
-			this.selection.clear() :
-			this.dataSource.data.forEach(row => this.selection.select(row))
+		console.log('master toggle', this.isAllSelected)
+		// this.isAllSelected() ?
+		// 	this.selection.clear() :
+		// 	this.dataSource.data.forEach(row => this.selection.select(row))
+
+		if (this.isAllSelected()) {
+
+			this.localItems.map(e => {
+				this.itemsCollection.doc(e.firebaseId).update({ completed: false })
+			})
+			// this.itemsCollection.doc()
+			// this.selection.clear()
+		} else {
+			this.localItems.map(e => {
+				this.itemsCollection.doc(e.firebaseId).update({ completed: true })
+			})
+			// this.dataSource.data.forEach(row => this.selection.select(row))
+		}
 	}
 
-	onRowSelection(row) {
+	onCheckboxSelection(row) {
 		// Fires everytime the checkbox is clicked
-		const selectedElements: TodoTask[] = this.selection.selected
-		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
+		let selectedElements: TodoTask[] = this.selection.selected
+		let selectedElementsPosition: number[] = selectedElements.map(el => el.position)
+		this.selection.clear()
 
 		const rowPositionId: number = row.position
 		const rowIsSelected: boolean = _includes(selectedElementsPosition, rowPositionId)
 
-		// update view:
-		this.dataSource.data.map(t => {
-			const rowMatches = rowPositionId === t.position
-			rowMatches && rowIsSelected ? t.completed = true : t.completed = false
-			return t
-		})
+		console.log(row, 'rowIsSelected:', rowIsSelected)
+		console.log('selected Elements', selectedElements)
+		console.log('selected el position', selectedElementsPosition)
 
 		const selectedRowFirebaseId: string = this.localItems
 			.filter(e => e.position === rowPositionId)
 			.map(e => e.firebaseId)[0]
 
 		// update db:
-		this.itemsCollection.doc(selectedRowFirebaseId).update({ task: 'UPDATE SUCCESS' })
+		this.itemsCollection.doc(selectedRowFirebaseId).update({ task: 'UPDATE SUCCESS', completed: rowIsSelected })
 	}
 
 	/** The label for the checkbox on the passed row */
