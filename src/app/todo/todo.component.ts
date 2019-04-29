@@ -7,14 +7,7 @@ import { MatTableDataSource } from '@angular/material'
 import { SelectionModel, DataSource } from '@angular/cdk/collections'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
 import { map } from 'rxjs/operators'
-
-
-export interface PeriodicElement {
-	name: string
-	position: number
-	weight: number
-	symbol: string
-}
+import { Observable, Subscription } from 'rxjs';
 
 export interface TodoTask {
 	position: number
@@ -22,18 +15,12 @@ export interface TodoTask {
 	completed?: boolean
 }
 
-let ELEMENT_DATA: any = [
-	{ position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-	{ position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-	{ position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-	{ position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-	{ position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-	{ position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-	{ position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-	{ position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-	{ position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-	{ position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-]
+export interface CategoryTablePayloadContainer {
+	firebaseId: string
+	positionId: number
+	task: TodoTask
+}
+
 
 let LIST_DATA: TodoTask[] = [
 	{ position: 1, task: 'a task for the beach' },
@@ -63,25 +50,13 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	selection = new SelectionModel<any>(true, [])
 
 	private itemsCollection: AngularFirestoreCollection<any>
-	items: any;
-
+	items: Observable<CategoryTablePayloadContainer[][]>;
+	// items: Subscription<CategoryTablePayloadContainer[][]>;
 
 	constructor(private db: AngularFirestore) {
 		this.itemsCollection = this.db.collection('categoryTable')
 
-		// *Old Reference Notes
-		// This doesn't work because when I subscribe this becomes a subscription. 
-		// I need to shape the observable with the date I want
-		////
-		// this.items = this.itemsCollection.snapshotChanges().subscribe(e => {
-		// 	console.log(e[0].payload, '@@@', e)
-		// 	return e.map(el => {
-		// 		const payloadData = el.payload.doc.data()
-		// 		const id = el.payload.doc.id
-		// 		return [id, ...payloadData]
-		// 	})
-		// })
-
+		// Subscription here for personal note - remove in production
 		this.items = this.itemsCollection.snapshotChanges().pipe(
 			map(e => {
 				return e.map(el => {
@@ -91,7 +66,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 					return [id, position, ...payloadData]
 				})
 			})
-		).subscribe(console.log)
+		)
+		// .subscribe(console.log)
 	}
 
 	updateTaskFromDb(docId: number) {
@@ -205,15 +181,13 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			return t
 		})
 
+		// Todo: Get the id from items observable and then use it in this inner observable to
+		// * identify the doc and then update.
+
 		// update db:
-		// CALL UPDATE DB
-		// Get id from collections for this doc
+		this.itemsCollection.doc('2TKsU5klUAc8UPvt58in').update({ task: 'UPDATE SUCCESS' })
 
-		// console.log('col data', collectionData)
-
-		// Get the doc that matches this row element
-		// this.itemsCollection.doc('')
-		// Update that doc with the new completed state
+		// Fix the static typing
 	}
 
 
@@ -225,7 +199,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
 	}
 
-	removeIndex(index: number, data: any): PeriodicElement[] {
+	removeIndex(index: number, data: any): any[] {
 		let newArr
 		newArr = data.filter((e) => e.position !== index)
 		return newArr
