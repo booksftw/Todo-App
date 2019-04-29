@@ -64,12 +64,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
 
 	constructor(private db: AngularFirestore) {
-	}
-
-	addTaskToDB() {
-		// const newTask: TodoTask = { position: 2, task: 'a task for the beach' }
-		// LIST_DATA.forEach(t => this.itemsCollection.add(newTask))
-		// USE THE UPDATED VIEW METHODS AND IMPLEMENT THE DB 
+		this.itemsCollection = this.db.collection('categoryTable')
 	}
 
 	updateTaskFromDb(docId: number) {
@@ -81,14 +76,12 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	ngOnInit() {
-		this.itemsCollection = this.db.collection('categoryTable')
 
 		// !Left off here
 		// * You have the data coming from the database.
 		// * Now you need to get the document ids and update and add and remove properly from the db.
 		// * You'll probably have to make the incoming data the immutable data instead of the LIST_DATA
 		this.itemsCollection.valueChanges().subscribe((t: TodoTask[]) => {
-			console.log(t)
 			this.dataSource.data = t
 		})
 
@@ -121,6 +114,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	onNewTaskSubmit() {
+		// ! NOT CONNECTED TO DATABASE HALF FUNCTIONAL
+
 		const task = this.newTaskInput.nativeElement.value
 		let newPositionId: number = _max(LIST_DATA.map(t => t.position))
 		const position: number = newPositionId + 1
@@ -135,7 +130,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// Update App View
 		this.dataSource.data = LIST_DATA
 
-		// Reset input
+		// Reset input html element
 		this.newTaskInput.nativeElement.value = ''
 	}
 
@@ -166,7 +161,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	onRowSelection(row) {
-		console.log('row e', row)
 		// Fires everytime the checkbox is clicked
 
 		const selectedElements: TodoTask[] = this.selection.selected
@@ -176,23 +170,30 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const rowPositionId: number = row.position
 		const rowIsSelected: boolean = _includes(selectedElementsPosition, rowPositionId)
 
-
-		// Update the object in this array of objects with the complete 
-		// *Note: This map object returns a new array but I think it manipulates the old one too
-		// * Try: Deep clone of data source and swap that with the data source and test below if original is effected 
-		const currentDataSourceClone = _cloneDeep(this.dataSource.data)
-		// const newDataSource = this.dataSource.data.map(t => {
-		const newDataSource = currentDataSourceClone.map(t => {
+		// update view:
+		this.dataSource.data.map(t => {
 			const rowMatches = rowPositionId === t.position
-			// Update task 
 			rowMatches && rowIsSelected ? t.completed = true : t.completed = false
 			return t
 		})
-		console.log(newDataSource, 'new data source', 'old data source', this.dataSource.data)
-		// update view:
-		// this.dataSource.data = new
 
 		// update db:
+		// CALL UPDATE DB
+		// Get id from collections for this doc
+		this.itemsCollection.snapshotChanges().subscribe(e => {
+			console.log(e[0].payload, '@@@', e)
+			const collectionData = e.map(el => {
+				const payloadData = el.payload.doc.data()
+				const id = el.payload.doc.id
+				// console.log('id', id, 'payloadData', payloadData)
+				return [id, ...payloadData]
+			})
+			console.log('col data', collectionData)
+
+		})
+		// Get the doc that matches this row element
+		// this.itemsCollection.doc('')
+		// Update that doc with the new completed state
 	}
 
 	/** The label for the checkbox on the passed row */
