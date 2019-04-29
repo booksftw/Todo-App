@@ -181,7 +181,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		this.itemsCollection.doc(selectedRowFirebaseId).update({ task: 'UPDATE SUCCESS' })
 	}
 
-
 	/** The label for the checkbox on the passed row */
 	checkboxLabel(row?: any): string {
 		if (!row) {
