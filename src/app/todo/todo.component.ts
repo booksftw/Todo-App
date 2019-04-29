@@ -1,14 +1,17 @@
-import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, ContentChild, ContentChildren, QueryList, ElementRef } from '@angular/core';
-import { random as _random, remove as _remove, max as _max, includes as _includes, sortBy as _sortBy, each as _each } from 'lodash'
-import { MatTableDataSource } from '@angular/material';
-import { SelectionModel, DataSource } from '@angular/cdk/collections';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, QueryList } from '@angular/core'
+import {
+	random as _random, remove as _remove, max as _max,
+	includes as _includes, sortBy as _sortBy, each as _each, cloneDeep as _cloneDeep
+} from 'lodash'
+import { MatTableDataSource } from '@angular/material'
+import { SelectionModel, DataSource } from '@angular/cdk/collections'
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
 
 export interface PeriodicElement {
-	name: string;
-	position: number;
-	weight: number;
-	symbol: string;
+	name: string
+	position: number
+	weight: number
+	symbol: string
 }
 
 export interface TodoTask {
@@ -28,7 +31,7 @@ let ELEMENT_DATA: any = [
 	{ position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
 	{ position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
 	{ position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-];
+]
 
 let LIST_DATA: TodoTask[] = [
 	{ position: 1, task: 'a task for the beach' },
@@ -50,14 +53,14 @@ let LIST_DATA: TodoTask[] = [
 })
 export class TodoComponent implements OnInit, AfterViewInit {
 	@ViewChildren('contentEditable') todoTasks: QueryList<any>
-	@ViewChild('newTaskInput') newTaskInput: any;
-	@ViewChildren('positionRows') positionRows: QueryList<any>;
-	displayedColumns: string[] = ['select', 'position', 'task', 'remove'];
-	// dataSource = new MatTableDataSource<TodoTask>(LIST_DATA);
-	dataSource = new MatTableDataSource<TodoTask>();
-	selection = new SelectionModel<any>(true, []);
+	@ViewChild('newTaskInput') newTaskInput: any
+	@ViewChildren('positionRows') positionRows: QueryList<any>
+	displayedColumns: string[] = ['select', 'position', 'task', 'remove']
+	// dataSource = new MatTableDataSource<TodoTask>(LIST_DATA)
+	dataSource = new MatTableDataSource<TodoTask>()
+	selection = new SelectionModel<any>(true, [])
 
-	private itemsCollection: AngularFirestoreCollection<any>;
+	private itemsCollection: AngularFirestoreCollection<any>
 
 
 	constructor(private db: AngularFirestore) {
@@ -130,7 +133,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// Todo: Save TO DB HERE
 
 		// Update App View
-		this.dataSource.data = LIST_DATA;
+		this.dataSource.data = LIST_DATA
 
 		// Reset input
 		this.newTaskInput.nativeElement.value = ''
@@ -151,15 +154,15 @@ export class TodoComponent implements OnInit, AfterViewInit {
 
 	/** Whether the number of selected elements matches the total number of rows. */
 	isAllSelected() {
-		const numSelected = this.selection.selected.length;
-		const numRows = this.dataSource.data.length;
-		return numSelected === numRows;
+		const numSelected = this.selection.selected.length
+		const numRows = this.dataSource.data.length
+		return numSelected === numRows
 	}
-	/** Selects all rows if they are not all selected; otherwise clear selection. */
+	/** Selects all rows if they are not all selected otherwise clear selection. */
 	masterToggle() {
 		this.isAllSelected() ?
 			this.selection.clear() :
-			this.dataSource.data.forEach(row => this.selection.select(row));
+			this.dataSource.data.forEach(row => this.selection.select(row))
 	}
 
 	onRowSelection(row) {
@@ -170,10 +173,22 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const selectedElementsPosition: number[] = selectedElements.map(el => el.position)
 
 		// Is row in selectedElementsPosition
-		const rowPositionId: number = row.position;
+		const rowPositionId: number = row.position
 		const rowIsSelected: boolean = _includes(selectedElementsPosition, rowPositionId)
 
 
+		// Update the object in this array of objects with the complete 
+		// *Note: This map object returns a new array but I think it manipulates the old one too
+		// * Try: Deep clone of data source and swap that with the data source and test below if original is effected 
+		const currentDataSourceClone = _cloneDeep(this.dataSource.data)
+		// const newDataSource = this.dataSource.data.map(t => {
+		const newDataSource = currentDataSourceClone.map(t => {
+			const rowMatches = rowPositionId === t.position
+			// Update task 
+			rowMatches && rowIsSelected ? t.completed = true : t.completed = false
+			return t
+		})
+		console.log(newDataSource, 'new data source', 'old data source', this.dataSource.data)
 		// update view:
 		// this.dataSource.data = new
 
@@ -183,13 +198,13 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	/** The label for the checkbox on the passed row */
 	checkboxLabel(row?: any): string {
 		if (!row) {
-			return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
+			return `${this.isAllSelected() ? 'select' : 'deselect'} all`
 		}
-		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
 	}
 
 	removeIndex(index: number, data: any): PeriodicElement[] {
-		let newArr;
+		let newArr
 		newArr = data.filter((e) => e.position !== index)
 		return newArr
 	}
