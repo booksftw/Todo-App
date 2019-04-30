@@ -1,49 +1,55 @@
 table {
-  width: 80%;
-  margin: auto;
-  margin-top: 5%;
+	width: 80%;
+	margin: auto;
+	margin-top: 5%;
 }
 
 td.mat-cell.cdk-column-task.mat-column-task {
-  max-width: 80px;
+	max-width: 80px;
 }
 
 td div {
-  outline-color: green;
-  padding: 0.625rem;
+	outline-color: green;
+	padding: 0.625rem;
 }
 
 textarea#newTaskInput {
-  height: 100px;
+	height: 100px;
 }
 
 table.mat-elevation-z8.mat-table,
 .mat-header-cell {
-  text-align: center !important;
+	text-align: center !important;
 }
 
 #taskTextArea {
-  resize: none;
+	resize: none;
 }
 
 div#add-category-container {
-  margin-top: 6.25rem;
-  display: flex;
-  justify-content: center;
+	margin-top: 6.25rem;
+	display: flex;
+	justify-content: center;
 }
 
 #add-category-btn {
-  height: 9.375rem;
-  width: 18.75rem;
+	height: 9.375rem;
+	width: 18.75rem;
 }
 
 .strikethrough {
-  text-decoration: line-through;
-  color: lightgray;
-  // background-color: rgba(0,0,0,0.1);
-  // color: lightgray;
+	text-decoration: line-through;
+	color: lightgray;
+	// background-color: rgba(0,0,0,0.1);
+	// color: lightgray;
 }
 
 .btnCompleted {
-  color: lightgray;
+	color: lightgray;
+}
+
+.highlight {
+	text-decoration: line-through;
+	background-color: darkgray;
+	opacity: 0.2;
 }

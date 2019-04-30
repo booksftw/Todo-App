@@ -76,15 +76,22 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// Remove Task From Db
 	}
 
-	ngOnInit() {
-		// Update View
+	databaseStateSetupIntialView() {
+
+		// Database Set Intial View
 		this.itemsCollection.valueChanges().subscribe((t: TodoTask[]) => {
+			console.log('database update view')
+			// Intial Table Data
 			this.dataSource.data = t
+			// Setup Intial Selected State
 			t.map((e, i) => {
 				e.completed ? this.selection.select(this.dataSource.data[i]) : null
 			})
 		})
+	}
 
+	ngOnInit() {
+		this.databaseStateSetupIntialView()
 	}
 
 	ngAfterViewInit() {
@@ -126,17 +133,10 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		this.newTaskInput.nativeElement.value = ''
 	}
 
-	removeTask(elPosition: number) {
-		// console.log('remove task', elPosition)
-		const listData = [...LIST_DATA]
-		LIST_DATA = listData.filter(t => {
-			return t.position !== elPosition
-		})
-
-		//Save persistent data here
-
-		// Update App View
-		this.dataSource.data = LIST_DATA
+	removeTask(element: TodoTask) {
+		console.log(element, 'element')
+		this.dataSource.data = this.dataSource.data.filter(e => e.position !== element.position)
+		console.log(this.dataSource.data, 'sss')
 	}
 
 	/** Whether the number of selected elements matches the total number of rows. */
@@ -151,41 +151,34 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// this.isAllSelected() ?
 		// 	this.selection.clear() :
 		// 	this.dataSource.data.forEach(row => this.selection.select(row))
+		let updateAllItemsCompleteState = (isComplete) => {
+			// Update all documents
+			this.localItems.map(el => {
+				this.itemsCollection.doc(el.firebaseId).update({ completed: isComplete })
+			})
+		}
 
 		if (this.isAllSelected()) {
-
-			this.localItems.map(e => {
-				this.itemsCollection.doc(e.firebaseId).update({ completed: false })
-			})
-			// this.itemsCollection.doc()
-			// this.selection.clear()
+			this.selection.clear()
+			updateAllItemsCompleteState(false)
 		} else {
-			this.localItems.map(e => {
-				this.itemsCollection.doc(e.firebaseId).update({ completed: true })
-			})
-			// this.dataSource.data.forEach(row => this.selection.select(row))
+			this.dataSource.data.forEach(row => this.selection.select(row))
+			updateAllItemsCompleteState(true)
 		}
 	}
 
+	isRowSelected(row) {
+		// Init this selects the rows
+		const rowIsSelected = this.selection.isSelected(row)
+		return rowIsSelected
+	}
+
 	onCheckboxSelection(row) {
-		// Fires everytime the checkbox is clicked
-		let selectedElements: TodoTask[] = this.selection.selected
-		let selectedElementsPosition: number[] = selectedElements.map(el => el.position)
-		this.selection.clear()
+		const rowFirebaseId = this.localItems.filter(e => e.position === row.position)[0].firebaseId
+		const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
+		console.log(this.localItems, ' local items ', row, 'row id>>>>', rowFirebaseId)
 
-		const rowPositionId: number = row.position
-		const rowIsSelected: boolean = _includes(selectedElementsPosition, rowPositionId)
-
-		console.log(row, 'rowIsSelected:', rowIsSelected)
-		console.log('selected Elements', selectedElements)
-		console.log('selected el position', selectedElementsPosition)
-
-		const selectedRowFirebaseId: string = this.localItems
-			.filter(e => e.position === rowPositionId)
-			.map(e => e.firebaseId)[0]
-
-		// update db:
-		this.itemsCollection.doc(selectedRowFirebaseId).update({ task: 'UPDATE SUCCESS', completed: rowIsSelected })
+		this.itemsCollection.doc(rowFirebaseId).update({ completed: rowIsSelected })
 	}
 
 	/** The label for the checkbox on the passed row */
@@ -196,10 +189,10 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
 	}
 
-	removeIndex(index: number, data: any): any[] {
-		let newArr
-		newArr = data.filter((e) => e.position !== index)
-		return newArr
-	}
+	// removeIndex(index: number, data: any): any[] {
+	// 	let newArr
+	// 	newArr = data.filter((e) => e.position !== index)
+	// 	// return newArr
+	// }
 
 }
