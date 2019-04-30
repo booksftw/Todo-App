@@ -78,6 +78,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			.subscribe((t) => {
 				console.log('database update view', t)
 				// Intial Table Sorted Data 
+				// TODO Update to get from table data object
 				this.dataSource.data = _orderby(t[0], ['completed'], ['asc']);
 				// Setup Intial Selected State
 				this.dataSource.data.map((e, i) => {
@@ -180,11 +181,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const x = this.dataSource.data.filter(el => el.position === row.position)[0]
 		x.completed = rowIsSelected
 
-		console.log('x', x)
-
 		this.dataSource.data = _orderby(this.dataSource.data, ['completed'], ['asc']);
 
-		console.log(this.dataSource.data, '@@@')
 		this.itemsCollection.doc(rowFirebaseId).update({ completed: rowIsSelected })
 	}
 
