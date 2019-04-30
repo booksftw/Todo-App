@@ -10,9 +10,11 @@ import { auth } from 'firebase/app';
 export class UserLoginComponent implements OnInit {
   userLoggedIn: boolean
   constructor(public afAuth: AngularFireAuth) {
-    this.afAuth.authState.subscribe(e => e === null ? this.userLoggedIn = false: this.userLoggedIn = true)
+    this.afAuth.authState.subscribe(e => e === null ? this.userLoggedIn = false : this.userLoggedIn = true)
+
   }
   login() {
+    // this.afAuth.auth.signInAndRetrieveDataWithEmailAndPassword('znick46@hotmail.ca', 'catsareawesome')
     this.afAuth.auth.signInWithPopup(new auth.GoogleAuthProvider());
   }
   logout() {
