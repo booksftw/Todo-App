@@ -106,6 +106,8 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		// Add new task to DB
 		this.itemsCollection.add(newTaskObject)
 
+		// I need to add a new task to this specific table that it's coming from so maybe I can get the table id
+
 		// Update App View
 		this.dataSource.data = newListData
 
