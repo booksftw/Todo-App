@@ -1,18 +1,19 @@
 import { Component, OnInit, AfterViewInit, ViewChildren, ViewChild, QueryList } from '@angular/core'
 import {
 	random as _random, remove as _remove, max as _max,
-	includes as _includes, sortBy as _sortBy, each as _each, cloneDeep as _cloneDeep
+	includes as _includes, sortBy as _sortBy, each as _each, cloneDeep as _cloneDeep,
+	orderBy as _orderby
 } from 'lodash'
 import { MatTableDataSource } from '@angular/material'
 import { SelectionModel, DataSource } from '@angular/cdk/collections'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
-import { map, filter, switchMap, mergeMap, take } from 'rxjs/operators'
+import { map, filter, switchMap, mergeMap, take, toArray } from 'rxjs/operators'
 import { Observable, Subscription } from 'rxjs';
 
 export interface TodoTask {
 	position: number
 	task: string
-	completed?: boolean
+	completed: boolean
 }
 
 export interface CategoryTablePayloadContainer {
@@ -20,20 +21,6 @@ export interface CategoryTablePayloadContainer {
 	position: number
 	task: TodoTask
 }
-
-
-let LIST_DATA: TodoTask[] = [
-	{ position: 1, task: 'a task for the beach' },
-	{ position: 2, task: 'a task for the beach' },
-	{ position: 3, task: 'a task for the beach' },
-	{ position: 4, task: 'a task for the beach' },
-	{ position: 5, task: 'a task for the beach' },
-	{ position: 6, task: 'a task for the beach' },
-	{ position: 7, task: 'a task for the beach' },
-	{ position: 8, task: 'a task for the beach' },
-	{ position: 9, task: 'a task for the beach' },
-	{ position: 10, task: 'a task for the beach' },
-]
 
 @Component({
 	selector: 'app-todo',
@@ -71,15 +58,29 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	databaseStateSetupIntialView() {
 		// Todo Set this up so it fires only once at the begining
 		// Database Set Intial View
+		// this.itemsCollection
+		// 	.valueChanges()
+		// 	.pipe(take(1))
+		// 	.subscribe((t: TodoTask[]) => {
+		// 		console.log('database update view', t)
+		// 		// Intial Table Data
+		// 		this.dataSource.data = t
+		// 		// Setup Intial Selected State
+		// 		t.map((e, i) => {
+		// 			e.completed ? this.selection.select(this.dataSource.data[i]) : null
+		// 		})
+		// 	})
+
 		this.itemsCollection
 			.valueChanges()
 			.pipe(take(1))
-			.subscribe((t: TodoTask[]) => {
-				console.log('database update view')
-				// Intial Table Data
-				this.dataSource.data = t
+			.pipe(toArray())
+			.subscribe((t) => {
+				console.log('database update view', t)
+				// Intial Table Sorted Data 
+				this.dataSource.data = _orderby(t[0], ['completed'], ['asc']);
 				// Setup Intial Selected State
-				t.map((e, i) => {
+				this.dataSource.data.map((e, i) => {
 					e.completed ? this.selection.select(this.dataSource.data[i]) : null
 				})
 			})
@@ -92,35 +93,36 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	ngAfterViewInit() {
 	}
 
-	onTypeUpdateTodo(taskPositionId?) {
+	onTypeUpdateTodo(row: TodoTask) {
+		// A View Child
 		let todoTasks = this.todoTasks.toArray()
+		// * Optimize this in the future
+		const activeTaskValue = todoTasks.map(e => e.nativeElement)
+			.filter(el => parseInt(el.id) === row.position)[0].innerText
 
-		const activeTaskValue = todoTasks.map(el => el.nativeElement)
-			.filter(el => parseInt(el.id) === taskPositionId)[0].innerText
+		// Update DB
+		const activeTaskFirebaseId = this.localItems.filter(el => el.position === row.position)
+			.map(e => e.firebaseId)[0]
 
-		const listData = [...LIST_DATA]
-		listData.filter(t => t.position === taskPositionId)[0].task = activeTaskValue
 
-		// Save persistent data here
-
-		// Update App View
-		this.dataSource.data = listData
+		this.itemsCollection.doc(activeTaskFirebaseId).update({ task: activeTaskValue })
 	}
 
 	onNewTaskSubmit() {
 		const task = this.newTaskInput.nativeElement.value
-		let newPositionId: number = _max(LIST_DATA.map(t => t.position))
+		let newPositionId: number = _max(this.dataSource.data.map(t => t.position))
 		const position: number = newPositionId + 1
-		const newTaskObject = { position, task }
+		const newTaskObject = { position, task, completed: false }
 
 		// Add new task to list
 		// LIST_DATA = [newTaskObject, ...LIST_DATA]
-		LIST_DATA = [newTaskObject, ...this.dataSource.data]
+		const newListData = [newTaskObject, ...this.dataSource.data]
 
-		// Todo: Save TO DB HERE
+		// Add new task to DB
+		this.itemsCollection.add(newTaskObject)
 
 		// Update App View
-		this.dataSource.data = LIST_DATA
+		this.dataSource.data = newListData
 
 		// Reset input html element
 		this.newTaskInput.nativeElement.value = ''
@@ -173,8 +175,16 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	onCheckboxSelection(row) {
 		const rowFirebaseId = this.localItems.filter(e => e.position === row.position)[0].firebaseId
 		const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
-		console.log(this.localItems, ' local items ', row, 'row id>>>>', rowFirebaseId)
 
+		// Update datasource
+		const x = this.dataSource.data.filter(el => el.position === row.position)[0]
+		x.completed = rowIsSelected
+
+		console.log('x', x)
+
+		this.dataSource.data = _orderby(this.dataSource.data, ['completed'], ['asc']);
+
+		console.log(this.dataSource.data, '@@@')
 		this.itemsCollection.doc(rowFirebaseId).update({ completed: rowIsSelected })
 	}
 
