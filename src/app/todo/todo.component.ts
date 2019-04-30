@@ -6,7 +6,7 @@ import {
 import { MatTableDataSource } from '@angular/material'
 import { SelectionModel, DataSource } from '@angular/cdk/collections'
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'
-import { map, filter, switchMap, mergeMap } from 'rxjs/operators'
+import { map, filter, switchMap, mergeMap, take } from 'rxjs/operators'
 import { Observable, Subscription } from 'rxjs';
 
 export interface TodoTask {
@@ -68,26 +68,21 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			.subscribe(console.log)
 	}
 
-	updateTaskFromDb(docId: number) {
-		// Update the db
-	}
-
-	removeTaskFromDb(docId: number) {
-		// Remove Task From Db
-	}
-
 	databaseStateSetupIntialView() {
-
+		// Todo Set this up so it fires only once at the begining
 		// Database Set Intial View
-		this.itemsCollection.valueChanges().subscribe((t: TodoTask[]) => {
-			console.log('database update view')
-			// Intial Table Data
-			this.dataSource.data = t
-			// Setup Intial Selected State
-			t.map((e, i) => {
-				e.completed ? this.selection.select(this.dataSource.data[i]) : null
+		this.itemsCollection
+			.valueChanges()
+			.pipe(take(1))
+			.subscribe((t: TodoTask[]) => {
+				console.log('database update view')
+				// Intial Table Data
+				this.dataSource.data = t
+				// Setup Intial Selected State
+				t.map((e, i) => {
+					e.completed ? this.selection.select(this.dataSource.data[i]) : null
+				})
 			})
-		})
 	}
 
 	ngOnInit() {
@@ -113,8 +108,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	onNewTaskSubmit() {
-		// ! NOT CONNECTED TO DATABASE HALF FUNCTIONAL
-
 		const task = this.newTaskInput.nativeElement.value
 		let newPositionId: number = _max(LIST_DATA.map(t => t.position))
 		const position: number = newPositionId + 1
@@ -134,9 +127,13 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	removeTask(element: TodoTask) {
-		console.log(element, 'element')
+		// Remove from view
 		this.dataSource.data = this.dataSource.data.filter(e => e.position !== element.position)
-		console.log(this.dataSource.data, 'sss')
+
+		const removedItemFirebaseId = this.localItems.filter(el => el.position === element.position)[0].firebaseId
+		// Remove From database
+		this.itemsCollection.doc(removedItemFirebaseId).delete()
+			.catch(err => console.log(err))
 	}
 
 	/** Whether the number of selected elements matches the total number of rows. */
