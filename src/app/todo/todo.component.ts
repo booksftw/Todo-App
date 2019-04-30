@@ -56,21 +56,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	databaseStateSetupIntialView() {
-		// Todo Set this up so it fires only once at the begining
-		// Database Set Intial View
-		// this.itemsCollection
-		// 	.valueChanges()
-		// 	.pipe(take(1))
-		// 	.subscribe((t: TodoTask[]) => {
-		// 		console.log('database update view', t)
-		// 		// Intial Table Data
-		// 		this.dataSource.data = t
-		// 		// Setup Intial Selected State
-		// 		t.map((e, i) => {
-		// 			e.completed ? this.selection.select(this.dataSource.data[i]) : null
-		// 		})
-		// 	})
-
 		this.itemsCollection
 			.valueChanges()
 			.pipe(take(1))
@@ -116,7 +101,6 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		const newTaskObject = { position, task, completed: false }
 
 		// Add new task to list
-		// LIST_DATA = [newTaskObject, ...LIST_DATA]
 		const newListData = [newTaskObject, ...this.dataSource.data]
 
 		// Add new task to DB
@@ -193,11 +177,5 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		}
 		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
 	}
-
-	// removeIndex(index: number, data: any): any[] {
-	// 	let newArr
-	// 	newArr = data.filter((e) => e.position !== index)
-	// 	// return newArr
-	// }
 
 }
