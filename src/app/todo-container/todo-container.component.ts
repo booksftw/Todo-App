@@ -31,7 +31,6 @@ export class TodoContainerComponent implements OnInit {
     console.log('howdy')
     this.todoService.getAllTables()
       .subscribe(arr => {
-        console.log(arr)
         arr.map(table => {
           const tableData: TodoTableData = table
           this.renderTodoComponent(TodoPresentationComponent, tableData)
@@ -41,7 +40,7 @@ export class TodoContainerComponent implements OnInit {
   }
 
   renderTodoComponent(component: Type<TodoPresentationComponent>, data: TodoTableData) {
-    console.log('dynamic generate factory test')
+    console.log('SMART COMPONENT: dynamic generate factory component')
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component)
     let viewContainerRef = this.todoHostContainer.viewContainerRef
     const componentRef = viewContainerRef.createComponent(componentFactory)

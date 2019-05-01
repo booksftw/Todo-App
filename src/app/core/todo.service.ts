@@ -39,8 +39,6 @@ export class TodoService {
   }
 
   getAllTables(): Observable<TodoTable[]> {
-    console.log('this todo tables', this.todoTables$)
-    this.todoTables$.subscribe(e => console.log(e))
     return this.todoTables$
   }
 
