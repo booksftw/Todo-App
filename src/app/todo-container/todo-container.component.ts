@@ -32,7 +32,6 @@ export class TodoContainerComponent implements OnInit {
 
       })
   }
-
   renderTodoComponent(component: Type<TodoPresentationComponent>, data: TodoTable) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component)
     let viewContainerRef = this.todoHostContainer.viewContainerRef
