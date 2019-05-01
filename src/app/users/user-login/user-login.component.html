@@ -1,7 +1,3 @@
-<p>
-	user-login works!
-</p>
-
 <div *ngIf="afAuth.user | async as user; else showLogin">
 	<h1>Hello {{ user.displayName }}!</h1>
 	<button (click)="logout()">Logout</button>
@@ -11,4 +7,5 @@
 	<button (click)="login()">Login with Google</button>
 </ng-template>
 
-<app-todo *ngIf="userLoggedIn"></app-todo>
+<!-- <app-todo *ngIf="userLoggedIn"></app-todo> -->
+<app-todo-container></app-todo-container>

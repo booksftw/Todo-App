@@ -24,6 +24,7 @@ export class TodoService {
   private itemsCollection: AngularFirestoreCollection<any>
 
   constructor(private db: AngularFirestore) {
+    console.log('SERVICE HERE')
     this.itemsCollection = this.db.collection('categoryTable')
     this.items = this.itemsCollection.snapshotChanges().pipe(
       map(e => {
@@ -36,6 +37,7 @@ export class TodoService {
         })
       })
     )
+    // * Subscribe in contianer compoennt
     // .subscribe(console.log)
   }
 }

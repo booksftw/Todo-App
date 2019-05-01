@@ -9,23 +9,23 @@ import { AngularFireAuthModule } from '@angular/fire/auth'
 
 import { environment } from '../environments/environment';
 
-import { TodoComponent } from './todo/todo.component';
+// import { TodoComponent } from './todo/todo.component';
 import { MatButtonModule, MatCheckboxModule } from '@angular/material';
 import { MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { UserLoginComponent } from './users/user-login/user-login.component';
 import { UserProfileComponent } from './users/user-profile/user-profile.component';
 import { TodoContainerComponent } from './todo-container/todo-container.component';
-import { TodoPresentationComponent } from './todo-container/todo-presentation/todo-presentation.component';
+// import { TodoPresentationComponent } from './todo-container/todo-presentation/todo-presentation.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TodoComponent,
+    // TodoComponent,
     UserLoginComponent,
     UserProfileComponent,
     TodoContainerComponent,
-    TodoPresentationComponent
+    // TodoPresentationComponent
   ],
   imports: [
     BrowserModule,

@@ -27,12 +27,17 @@ import { Observable, Subscription } from 'rxjs';
 	styleUrls: ['./todo.component.scss']
 })
 export class TodoComponent implements OnInit, AfterViewInit {
-	@ViewChildren('contentEditable') todoTasks: QueryList<any>
-	@ViewChild('newTaskInput') newTaskInput: any
-	@ViewChildren('positionRows') positionRows: QueryList<any>
-	displayedColumns: string[] = ['select', 'position', 'task', 'remove']
-	dataSource = new MatTableDataSource<TodoTask>()
-	selection = new SelectionModel<any>(true)
+
+	ngOnitInit() { }
+	ngAfterViewInit() { }
+
+	// * Presentation component
+	// @ViewChildren('contentEditable') todoTasks: QueryList<any>
+	// @ViewChild('newTaskInput') newTaskInput: any
+	// @ViewChildren('positionRows') positionRows: QueryList<any>
+	// displayedColumns: string[] = ['select', 'position', 'task', 'remove']
+	// dataSource = new MatTableDataSource<TodoTask>()
+	// selection = new SelectionModel<any>(true)
 
 	// private itemsCollection: AngularFirestoreCollection<any>
 	// items: Subscription
@@ -56,139 +61,139 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	// }
 
 	// * Container Component
-	databaseStateSetupIntialView() {
-		this.itemsCollection
-			.valueChanges()
-			.pipe(take(1))
-			.pipe(toArray())
-			.subscribe((t) => {
-				console.log('database update view', t)
-				// Intial Table Sorted Data 
-				// TODO Update to get from table data object
-				this.dataSource.data = _orderby(t[0], ['completed'], ['asc']);
-				// Setup Intial Selected State
-				this.dataSource.data.map((e, i) => {
-					e.completed ? this.selection.select(this.dataSource.data[i]) : null
-				})
-			})
-	}
+	// databaseStateSetupIntialView() {
+	// 	this.itemsCollection
+	// 		.valueChanges()
+	// 		.pipe(take(1))
+	// 		.pipe(toArray())
+	// 		.subscribe((t) => {
+	// 			console.log('database update view', t)
+	// 			// Intial Table Sorted Data 
+	// 			// TODO Update to get from table data object
+	// 			this.dataSource.data = _orderby(t[0], ['completed'], ['asc']);
+	// 			// Setup Intial Selected State
+	// 			this.dataSource.data.map((e, i) => {
+	// 				e.completed ? this.selection.select(this.dataSource.data[i]) : null
+	// 			})
+	// 		})
+	// }
 
 	ngOnInit() {
 		// * Container Component
-		this.databaseStateSetupIntialView()
+		// this.databaseStateSetupIntialView()
 	}
 
 	// ngAfterViewInit() {
 	// }
 
 	// * Container / Presentation Component
-	onTypeUpdateTodo(row: TodoTask) {
-		// A View Child
-		let todoTasks = this.todoTasks.toArray()
-		// * Optimize this in the future
-		const activeTaskValue = todoTasks.map(e => e.nativeElement)
-			.filter(el => parseInt(el.id) === row.position)[0].innerText
+	// onTypeUpdateTodo(row: TodoTask) {
+	// 	// A View Child
+	// 	let todoTasks = this.todoTasks.toArray()
+	// 	// * Optimize this in the future
+	// 	const activeTaskValue = todoTasks.map(e => e.nativeElement)
+	// 		.filter(el => parseInt(el.id) === row.position)[0].innerText
 
-		// Update DB
-		const activeTaskFirebaseId = this.localItems.filter(el => el.position === row.position)
-			.map(e => e.firebaseId)[0]
+	// 	// Update DB
+	// 	const activeTaskFirebaseId = this.localItems.filter(el => el.position === row.position)
+	// 		.map(e => e.firebaseId)[0]
 
 
-		this.itemsCollection.doc(activeTaskFirebaseId).update({ task: activeTaskValue })
-	}
+	// 	this.itemsCollection.doc(activeTaskFirebaseId).update({ task: activeTaskValue })
+	// }
 
 	// * Container / Presentation Compoent 
-	onNewTaskSubmit() {
-		const task = this.newTaskInput.nativeElement.value
-		let newPositionId: number = _max(this.dataSource.data.map(t => t.position))
-		const position: number = newPositionId + 1
-		const newTaskObject = { position, task, completed: false }
+	// onNewTaskSubmit() {
+	// 	const task = this.newTaskInput.nativeElement.value
+	// 	let newPositionId: number = _max(this.dataSource.data.map(t => t.position))
+	// 	const position: number = newPositionId + 1
+	// 	const newTaskObject = { position, task, completed: false }
 
-		// Add new task to list
-		const newListData = [newTaskObject, ...this.dataSource.data]
+	// 	// Add new task to list
+	// 	const newListData = [newTaskObject, ...this.dataSource.data]
 
-		// Add new task to DB
-		this.itemsCollection.add(newTaskObject)
+	// 	// Add new task to DB
+	// 	this.itemsCollection.add(newTaskObject)
 
-		// I need to add a new task to this specific table that it's coming from so maybe I can get the table id
+	// 	// I need to add a new task to this specific table that it's coming from so maybe I can get the table id
 
-		// Update App View
-		this.dataSource.data = newListData
+	// 	// Update App View
+	// 	this.dataSource.data = newListData
 
-		// Reset input html element
-		this.newTaskInput.nativeElement.value = ''
-	}
+	// 	// Reset input html element
+	// 	this.newTaskInput.nativeElement.value = ''
+	// }
 
 	// * Container / Presentation Component
-	removeTask(element: TodoTask) {
-		// Remove from view
-		this.dataSource.data = this.dataSource.data.filter(e => e.position !== element.position)
+	// removeTask(element: TodoTask) {
+	// 	// Remove from view
+	// 	this.dataSource.data = this.dataSource.data.filter(e => e.position !== element.position)
 
-		const removedItemFirebaseId = this.localItems.filter(el => el.position === element.position)[0].firebaseId
-		// Remove From database
-		this.itemsCollection.doc(removedItemFirebaseId).delete()
-			.catch(err => console.log(err))
-	}
+	// 	const removedItemFirebaseId = this.localItems.filter(el => el.position === element.position)[0].firebaseId
+	// 	// Remove From database
+	// 	this.itemsCollection.doc(removedItemFirebaseId).delete()
+	// 		.catch(err => console.log(err))
+	// }
 
 	// * Container / Presentation Component
 	/** Whether the number of selected elements matches the total number of rows. */
-	isAllSelected() {
-		const numSelected = this.selection.selected.length
-		const numRows = this.dataSource.data.length
-		return numSelected === numRows
-	}
+	// isAllSelected() {
+	// 	const numSelected = this.selection.selected.length
+	// 	const numRows = this.dataSource.data.length
+	// 	return numSelected === numRows
+	// }
 
 	// * Container / Presentation Component
 	/** Selects all rows if they are not all selected otherwise clear selection. */
-	masterToggle() {
-		console.log('master toggle', this.isAllSelected)
-		// this.isAllSelected() ?
-		// 	this.selection.clear() :
-		// 	this.dataSource.data.forEach(row => this.selection.select(row))
-		let updateAllItemsCompleteState = (isComplete) => {
-			// Update all documents
-			this.localItems.map(el => {
-				this.itemsCollection.doc(el.firebaseId).update({ completed: isComplete })
-			})
-		}
+	// masterToggle() {
+	// 	console.log('master toggle', this.isAllSelected)
+	// 	// this.isAllSelected() ?
+	// 	// 	this.selection.clear() :
+	// 	// 	this.dataSource.data.forEach(row => this.selection.select(row))
+	// 	let updateAllItemsCompleteState = (isComplete) => {
+	// 		// Update all documents
+	// 		this.localItems.map(el => {
+	// 			this.itemsCollection.doc(el.firebaseId).update({ completed: isComplete })
+	// 		})
+	// 	}
 
-		if (this.isAllSelected()) {
-			this.selection.clear()
-			updateAllItemsCompleteState(false)
-		} else {
-			this.dataSource.data.forEach(row => this.selection.select(row))
-			updateAllItemsCompleteState(true)
-		}
-	}
-
-	// * Container / Presentation Component
-	isRowSelected(row) {
-		// Init this selects the rows
-		const rowIsSelected = this.selection.isSelected(row)
-		return rowIsSelected
-	}
+	// 	if (this.isAllSelected()) {
+	// 		this.selection.clear()
+	// 		updateAllItemsCompleteState(false)
+	// 	} else {
+	// 		this.dataSource.data.forEach(row => this.selection.select(row))
+	// 		updateAllItemsCompleteState(true)
+	// 	}
+	// }
 
 	// * Container / Presentation Component
-	onCheckboxSelection(row) {
-		const rowFirebaseId = this.localItems.filter(e => e.position === row.position)[0].firebaseId
-		const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
+	// isRowSelected(row) {
+	// 	// Init this selects the rows
+	// 	const rowIsSelected = this.selection.isSelected(row)
+	// 	return rowIsSelected
+	// }
 
-		// Update datasource
-		const x = this.dataSource.data.filter(el => el.position === row.position)[0]
-		x.completed = rowIsSelected
+	// // * Container / Presentation Component
+	// onCheckboxSelection(row) {
+	// 	const rowFirebaseId = this.localItems.filter(e => e.position === row.position)[0].firebaseId
+	// 	const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
 
-		this.dataSource.data = _orderby(this.dataSource.data, ['completed'], ['asc']);
+	// 	// Update datasource
+	// 	const x = this.dataSource.data.filter(el => el.position === row.position)[0]
+	// 	x.completed = rowIsSelected
 
-		this.itemsCollection.doc(rowFirebaseId).update({ completed: rowIsSelected })
-	}
+	// 	this.dataSource.data = _orderby(this.dataSource.data, ['completed'], ['asc']);
 
-	// * Container / Presentation Component
-	/** The label for the checkbox on the passed row */
-	checkboxLabel(row?: any): string {
-		if (!row) {
-			return `${this.isAllSelected() ? 'select' : 'deselect'} all`
-		}
-		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
-	}
+	// 	this.itemsCollection.doc(rowFirebaseId).update({ completed: rowIsSelected })
+	// }
+
+	// // * Container / Presentation Component
+	// /** The label for the checkbox on the passed row */
+	// checkboxLabel(row?: any): string {
+	// 	if (!row) {
+	// 		return `${this.isAllSelected() ? 'select' : 'deselect'} all`
+	// 	}
+	// 	return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
+	// }
 
 }
