@@ -1,14 +1,15 @@
 import { Component, OnInit, ViewChild, ComponentFactoryResolver, Type } from '@angular/core';
 import { toArray, take } from 'rxjs/operators';
-import { TodoService } from '../core/todo.service';
+import { TodoService, TodoTask } from '../core/todo.service';
 import { TodoHostDirective } from '../shared/todo-host.directive';
 import { TodoPresentationComponent } from './todo-presentation/todo-presentation.component'
 import { MatTableDataSource } from '@angular/material';
 
 export interface TodoTableData {
   // Todo Update Interface
-  tableData: any,
-  localItems: any
+  firebaseId: string,
+  tableName: string,
+  tasks: TodoTask[]
 }
 
 @Component({
@@ -36,10 +37,8 @@ export class TodoContainerComponent implements OnInit {
     this.todoService.getAllTables()
       .subscribe(arr => {
         arr.map(table => {
-          let tableData: TodoTableData
-          const { tasks, tableName } = table
-          console.log(arr, 'arr')
-
+          const tableData: TodoTableData = table
+          this.renderTodoComponent(TodoPresentationComponent, tableData)
         })
 
       })
@@ -49,9 +48,9 @@ export class TodoContainerComponent implements OnInit {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component)
     let viewContainerRef = this.todoHostContainer.viewContainerRef
     const componentRef = viewContainerRef.createComponent(componentFactory)
-    componentRef.instance.dataSource = new MatTableDataSource(data.tableData) // * Insert Intial data in there
-    // componentRef.instance.dataSource.data = data.tableData
-    componentRef.instance.localItems = data.localItems
+    componentRef.instance.dataSource = new MatTableDataSource(data.tasks) // * Insert Intial data in there
+    componentRef.instance.firebaseId = data.firebaseId
+    componentRef.instance.tableName = data.tableName
   }
 
   databaseStateSetupIntialView() {

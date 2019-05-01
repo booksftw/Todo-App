@@ -19,6 +19,9 @@ export class TodoPresentationComponent implements OnInit {
   localItems: any // Todo Update this type
   selection = new SelectionModel<any>(true)
 
+  tableName: string
+  firebaseId: string
+
   constructor() { }
 
   ngOnInit() {
