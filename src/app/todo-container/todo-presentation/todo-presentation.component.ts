@@ -20,7 +20,7 @@ export class TodoPresentationComponent implements OnInit {
   selection = new SelectionModel<any>(true)
 
   tableName: string
-  firebaseId: string
+  tableFirebaseId: string
 
   constructor() { }
 
@@ -101,7 +101,8 @@ export class TodoPresentationComponent implements OnInit {
 
   onCheckboxSelection(row) {
     // const rowFirebaseId = this.localItems.filter(e => e.position === row.position)[0].firebaseId
-    // const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
+    console.log(this.dataSource.data, ' <<<<')
+    const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
 
     // // Update datasource
     // const x = this.dataSource.data.filter(el => el.position === row.position)[0]

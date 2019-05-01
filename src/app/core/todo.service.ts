@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export interface TodoTable {
-  firebaseId: string
+  tableFirebaseId: string
   tableName: string
   tasks: TodoTask[]
 }
@@ -28,11 +28,11 @@ export class TodoService {
 
     // Shape and Extract Data
     this.todoTables$ = this.todoTablesCollection.snapshotChanges().pipe(
-      map(e => {
-        return e.map(el => {
-          const payloadData = el.payload.doc.data()
-          const firebaseId = el.payload.doc.id
-          return { firebaseId, ...payloadData }
+      map(el => {
+        return el.map(t => {
+          const payloadData = t.payload.doc.data()
+          const tableFirebaseId = t.payload.doc.id
+          return { tableFirebaseId, ...payloadData }
         })
       })
     )

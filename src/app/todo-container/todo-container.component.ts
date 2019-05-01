@@ -5,7 +5,7 @@ import { TodoPresentationComponent } from './todo-presentation/todo-presentation
 import { MatTableDataSource } from '@angular/material';
 
 export interface TodoTableData {
-  firebaseId: string,
+  tableFirebaseId: string,
   tableName: string,
   tasks: TodoTask[]
 }
@@ -28,7 +28,6 @@ export class TodoContainerComponent implements OnInit {
   }
 
   initTodoTableComponents() {
-    console.log('howdy')
     this.todoService.getAllTables()
       .subscribe(arr => {
         arr.map(table => {
@@ -40,12 +39,11 @@ export class TodoContainerComponent implements OnInit {
   }
 
   renderTodoComponent(component: Type<TodoPresentationComponent>, data: TodoTableData) {
-    console.log('SMART COMPONENT: dynamic generate factory component')
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component)
     let viewContainerRef = this.todoHostContainer.viewContainerRef
     const componentRef = viewContainerRef.createComponent(componentFactory)
     componentRef.instance.dataSource = new MatTableDataSource(data.tasks) // * Insert Intial data in there
-    componentRef.instance.firebaseId = data.firebaseId
+    componentRef.instance.tableFirebaseId = data.tableFirebaseId
     componentRef.instance.tableName = data.tableName
   }
 
