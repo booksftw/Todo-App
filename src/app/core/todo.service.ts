@@ -3,17 +3,23 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { map, take, toArray } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
+export interface TodoTable {
+  firebaseId: string
+  name: string
+  tasks: TodoTask[]
+}
+
 export interface TodoTask {
   position: number
   task: string
   completed: boolean
 }
 
-export interface todoTablePayload {
-  firebaseId: string
-  // position: number
-  task: TodoTask
-}
+// `export interface todoTablePayload {
+//   firebaseId: string
+//   // position: number
+//   task: TodoTask
+// }`
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +47,7 @@ export class TodoService {
     )
     // .subscribe(console.log)
   }
-  getAllTables() {
+  getAllTables(): Observable<TodoTable[]> {
     console.log('this todo tables', this.todoTables)
     return this.todoTables
   }
