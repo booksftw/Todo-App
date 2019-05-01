@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 export interface TodoTable {
   firebaseId: string
-  name: string
+  tableName: string
   tasks: TodoTask[]
 }
 

@@ -36,7 +36,9 @@ export class TodoContainerComponent implements OnInit {
     this.todoService.getAllTables()
       .subscribe(arr => {
         arr.map(table => {
-          const { tasks } = table
+          let tableData: TodoTableData
+          const { tasks, tableName } = table
+          console.log(arr, 'arr')
 
         })
 
