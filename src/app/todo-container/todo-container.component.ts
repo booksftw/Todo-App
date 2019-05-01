@@ -17,7 +17,7 @@ export interface TodoTableData {
 })
 export class TodoContainerComponent implements OnInit {
   @ViewChild(TodoHostDirective) todoHostContainer: TodoHostDirective
-  itemsCollection
+  // itemsCollection
   constructor(
     private todoService: TodoService,
     private componentFactoryResolver: ComponentFactoryResolver
@@ -29,8 +29,10 @@ export class TodoContainerComponent implements OnInit {
   }
 
   initTodoTableComponents() {
+    console.log('howdy')
     this.todoService.getAllTables()
       .subscribe(arr => {
+        console.log(arr)
         arr.map(table => {
           const tableData: TodoTableData = table
           this.renderTodoComponent(TodoPresentationComponent, tableData)

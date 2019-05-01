@@ -20,18 +20,17 @@ export interface TodoTask {
 })
 export class TodoService {
   private todoTablesCollection: AngularFirestoreCollection<any>
-  public todoTables: Observable<TodoTable[]>;
+  public todoTables$: Observable<TodoTable[]>;
 
   constructor(private db: AngularFirestore) {
     console.log('SERVICE HERE')
     this.todoTablesCollection = this.db.collection('todoTables')
 
     // Shape and Extract Data
-    this.todoTables = this.todoTablesCollection.snapshotChanges().pipe(
+    this.todoTables$ = this.todoTablesCollection.snapshotChanges().pipe(
       map(e => {
         return e.map(el => {
           const payloadData = el.payload.doc.data()
-          const position = payloadData.position
           const firebaseId = el.payload.doc.id
           return { firebaseId, ...payloadData }
         })
@@ -40,8 +39,9 @@ export class TodoService {
   }
 
   getAllTables(): Observable<TodoTable[]> {
-    console.log('this todo tables', this.todoTables)
-    return this.todoTables
+    console.log('this todo tables', this.todoTables$)
+    this.todoTables$.subscribe(e => console.log(e))
+    return this.todoTables$
   }
 
 }

@@ -24,9 +24,7 @@ export class TodoPresentationComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-    // Todo Put initial data into dataSource.data for table
-  }
+  ngOnInit() { }
 
   onTypeUpdateTodo(row: TodoTask) {
     //   // A View Child
@@ -116,10 +114,10 @@ export class TodoPresentationComponent implements OnInit {
 
   /** The label for the checkbox on the passed row */
   checkboxLabel(row?: any): string {
-    // if (!row) {
-    //   return `${this.isAllSelected() ? 'select' : 'deselect'} all`
-    // }
-    // return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
-    return 'true'
+    if (!row) {
+      return `${this.isAllSelected() ? 'select' : 'deselect'} all`
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`
+    // return 'true'
   }
 }
