@@ -17,12 +17,11 @@ export interface TodoTableData {
 })
 export class TodoContainerComponent implements OnInit {
   @ViewChild(TodoHostDirective) todoHostContainer: TodoHostDirective
-  // itemsCollection
+
   constructor(
     private todoService: TodoService,
     private componentFactoryResolver: ComponentFactoryResolver
   ) { }
-
 
   ngOnInit() {
     this.initTodoTableComponents()
