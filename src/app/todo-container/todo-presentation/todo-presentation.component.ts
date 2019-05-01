@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChildren, ViewChild, QueryList, Output, EventEmi
 import { TodoTask } from 'src/app/core/todo.service';
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-import { orderBy as _orderby } from 'lodash'
+import { orderBy as _orderby, max as _max } from 'lodash'
 
 @Component({
   selector: 'app-todo-presentation',
@@ -15,6 +15,9 @@ export class TodoPresentationComponent implements OnInit {
   @ViewChild('newTaskInput') newTaskInput: any
   @ViewChildren('positionRows') positionRows: QueryList<any>
   updateTaskCompleteState: EventEmitter<any> = new EventEmitter()
+  
+  addNewTask: EventEmitter<any> = new EventEmitter()
+
   displayedColumns: string[] = ['select', 'position', 'task', 'remove']
   // dataSource = new MatTableDataSource<TodoTask>()
   dataSource: MatTableDataSource<TodoTask>
@@ -51,22 +54,22 @@ export class TodoPresentationComponent implements OnInit {
   }
 
   onNewTaskSubmit() {
-    //   const task = this.newTaskInput.nativeElement.value
-    //   let newPositionId: number = _max(this.dataSource.data.map(t => t.position))
-    //   const position: number = newPositionId + 1
-    //   const newTaskObject = { position, task, completed: false }
+    const task = this.newTaskInput.nativeElement.value
+    let newPositionId: number = _max(this.dataSource.data.map(t => t.position)) + 1
+    const newTaskObject: TodoTask = { position: newPositionId, task, completed: false }
+    console.log('yo task', task, 'new Task Object', newTaskObject)
 
-    //   // Add new task to list
-    //   const newListData = [newTaskObject, ...this.dataSource.data]
+    // Add new task to list
+    const newListData = [newTaskObject, ...this.dataSource.data]
 
-    //   // Add new task to DB
-    //   this.itemsCollection.add(newTaskObject)
+    // Add new task to DB
+    // this.itemsCollection.add(newTaskObject)
 
-    //   // Update App View
-    //   this.dataSource.data = newListData
+    // Update App View
+    this.dataSource.data = newListData
 
-    //   // Reset input html element
-    //   this.newTaskInput.nativeElement.value = ''
+    // // Reset input html element
+    // this.newTaskInput.nativeElement.value = ''
   }
 
   removeTask(element: TodoTask) {

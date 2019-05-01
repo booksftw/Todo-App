@@ -4,7 +4,6 @@ import { TodoHostDirective } from '../shared/todo-host.directive';
 import { TodoPresentationComponent } from './todo-presentation/todo-presentation.component'
 import { MatTableDataSource } from '@angular/material';
 
-
 @Component({
   selector: 'app-todo-container',
   templateUrl: './todo-container.component.html',
@@ -32,6 +31,7 @@ export class TodoContainerComponent implements OnInit {
 
       })
   }
+
   renderTodoComponent(component: Type<TodoPresentationComponent>, data: TodoTable) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component)
     let viewContainerRef = this.todoHostContainer.viewContainerRef
