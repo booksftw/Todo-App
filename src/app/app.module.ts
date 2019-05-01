@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { UserLoginComponent } from './users/user-login/user-login.component';
 import { UserProfileComponent } from './users/user-profile/user-profile.component';
 import { TodoContainerComponent } from './todo-container/todo-container.component';
-// import { TodoPresentationComponent } from './todo-container/todo-presentation/todo-presentation.component';
+import { TodoPresentationComponent } from './todo-container/todo-presentation/todo-presentation.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,7 @@ import { TodoContainerComponent } from './todo-container/todo-container.componen
     UserLoginComponent,
     UserProfileComponent,
     TodoContainerComponent,
-    // TodoPresentationComponent
+    TodoPresentationComponent
   ],
   imports: [
     BrowserModule,

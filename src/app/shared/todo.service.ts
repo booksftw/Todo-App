@@ -40,4 +40,12 @@ export class TodoService {
     // * Subscribe in contianer compoennt
     // .subscribe(console.log)
   }
+
+  // getItemsCollection(): {
+  //   return this.itemsCollection
+  // }
+
+  getLocalItems(): CategoryTablePayloadContainer[] {
+    return this.localItems
+  }
 }

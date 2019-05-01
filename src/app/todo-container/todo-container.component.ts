@@ -22,10 +22,10 @@ export class TodoContainerComponent implements OnInit {
     // The intial database data setup
     // Get it here and pass it to property in presentation
     // Pass this observable into the presentation object and it'll subscribe on the inside. Don't forget to unsubscribe.
-    this.itemsCollection
-      .valueChanges()
-      .pipe(take(1))
-      .pipe(toArray())
+    // this.itemsCollection
+    //   .valueChanges()
+    //   .pipe(take(1))
+    //   .pipe(toArray())
     //* Subscribe in child component
     // .subscribe((t) => {
     //   console.log('database update view', t)

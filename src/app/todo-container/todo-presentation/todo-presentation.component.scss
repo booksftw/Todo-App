@@ -1,0 +1,44 @@
+table {
+	width: 80%;
+	margin: auto;
+	margin-top: 5%;
+}
+
+td.mat-cell.cdk-column-task.mat-column-task {
+	max-width: 80px;
+}
+
+td div {
+	outline-color: green;
+	padding: 0.625rem;
+}
+
+textarea#newTaskInput {
+	height: 100px;
+}
+
+table.mat-elevation-z8.mat-table,
+.mat-header-cell {
+	text-align: center !important;
+}
+
+#taskTextArea {
+	resize: none;
+}
+
+.strikethrough {
+	text-decoration: line-through;
+	color: lightgray;
+	// background-color: rgba(0,0,0,0.1);
+	// color: lightgray;
+}
+
+.btnCompleted {
+	color: lightgray;
+}
+
+.highlight {
+	text-decoration: line-through;
+	background-color: darkgray;
+	opacity: 0.2;
+}
