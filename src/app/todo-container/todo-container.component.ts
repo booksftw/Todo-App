@@ -1,6 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ComponentFactoryResolver, Type } from '@angular/core';
 import { toArray, take } from 'rxjs/operators';
-import { TodoService } from '../shared/todo.service';
+import { TodoService } from '../core/todo.service';
+import { TodoHostDirective } from '../shared/todo-host.directive';
+import { TodoPresentationComponent } from './todo-presentation/todo-presentation.component'
+import { MatTableDataSource } from '@angular/material';
+
+export interface TodoTableData {
+  // Todo Update Interface
+  tableData: any,
+  localItems: any
+}
 
 @Component({
   selector: 'app-todo-container',
@@ -8,14 +17,35 @@ import { TodoService } from '../shared/todo.service';
   styleUrls: ['./todo-container.component.scss']
 })
 export class TodoContainerComponent implements OnInit {
+  @ViewChild(TodoHostDirective) todoHostContainer: TodoHostDirective
   itemsCollection
   constructor(
-    private todoService: TodoService
+    private todoService: TodoService,
+    private componentFactoryResolver: ComponentFactoryResolver
   ) { }
 
-  ngOnInit() {
 
-    this.databaseStateSetupIntialView()
+  ngOnInit() {
+    this.initTodoTableComponents()
+
+    // this.todoService.getAllTodosTables()
+    // Make local items in here with the collect
+    // // this.todoService.getLocalItems()
+  }
+  initTodoTableComponents() {
+    this.todoService.getAllTables()
+      .subscribe(table => {
+        console.log('table', table)
+      })
+  }
+  renderTodoComponent(component: Type<TodoPresentationComponent>, data: TodoTableData) {
+    console.log('dynamic generate factory test')
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component)
+    let viewContainerRef = this.todoHostContainer.viewContainerRef
+    const componentRef = viewContainerRef.createComponent(componentFactory)
+    componentRef.instance.dataSource = new MatTableDataSource(data.tableData) // * Insert Intial data in there
+    // componentRef.instance.dataSource.data = data.tableData
+    componentRef.instance.localItems = data.localItems
   }
 
   databaseStateSetupIntialView() {

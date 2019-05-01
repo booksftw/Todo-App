@@ -17,6 +17,7 @@ import { UserLoginComponent } from './users/user-login/user-login.component';
 import { UserProfileComponent } from './users/user-profile/user-profile.component';
 import { TodoContainerComponent } from './todo-container/todo-container.component';
 import { TodoPresentationComponent } from './todo-container/todo-presentation/todo-presentation.component';
+import { TodoHostDirective } from './shared/todo-host.directive';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { TodoPresentationComponent } from './todo-container/todo-presentation/to
     UserLoginComponent,
     UserProfileComponent,
     TodoContainerComponent,
-    TodoPresentationComponent
+    TodoPresentationComponent,
+    TodoHostDirective
   ],
   imports: [
     BrowserModule,
@@ -39,6 +41,7 @@ import { TodoPresentationComponent } from './todo-container/todo-presentation/to
     AngularFireAuthModule
   ],
   providers: [],
+  entryComponents: [TodoPresentationComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

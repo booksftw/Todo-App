@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChildren, ViewChild, QueryList } from '@angular/core';
-import { TodoTask } from 'src/app/shared/todo.service';
+import { TodoTask } from 'src/app/core/todo.service';
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 
@@ -14,7 +14,9 @@ export class TodoPresentationComponent implements OnInit {
   @ViewChild('newTaskInput') newTaskInput: any
   @ViewChildren('positionRows') positionRows: QueryList<any>
   displayedColumns: string[] = ['select', 'position', 'task', 'remove']
-  dataSource = new MatTableDataSource<TodoTask>()
+  // dataSource = new MatTableDataSource<TodoTask>()
+  dataSource: MatTableDataSource<TodoTask>
+  localItems: any // Todo Update this type
   selection = new SelectionModel<any>(true)
 
   constructor() { }
