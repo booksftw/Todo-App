@@ -10,17 +10,17 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { map, filter, switchMap, mergeMap, take, toArray } from 'rxjs/operators'
 import { Observable, Subscription } from 'rxjs';
 
-export interface TodoTask {
-	position: number
-	task: string
-	completed: boolean
-}
+// export interface TodoTask {
+// 	position: number
+// 	task: string
+// 	completed: boolean
+// }
 
-export interface CategoryTablePayloadContainer {
-	firebaseId: string
-	position: number
-	task: TodoTask
-}
+// export interface CategoryTablePayloadContainer {
+// 	firebaseId: string
+// 	position: number
+// 	task: TodoTask
+// }
 @Component({
 	selector: 'app-todo',
 	templateUrl: './todo.component.html',
@@ -34,26 +34,28 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	dataSource = new MatTableDataSource<TodoTask>()
 	selection = new SelectionModel<any>(true)
 
-	private itemsCollection: AngularFirestoreCollection<any>
-	items: Subscription
-	localItems: CategoryTablePayloadContainer[] = []
+	// private itemsCollection: AngularFirestoreCollection<any>
+	// items: Subscription
+	// localItems: CategoryTablePayloadContainer[] = []
 
-	constructor(private db: AngularFirestore) {
-		this.itemsCollection = this.db.collection('categoryTable')
-		this.items = this.itemsCollection.snapshotChanges().pipe(
-			map(e => {
-				return e.map(el => {
-					const payloadData = el.payload.doc.data()
-					const position = payloadData.position
-					const firebaseId = el.payload.doc.id
-					this.localItems.push({ firebaseId, position, ...payloadData })
-					return { firebaseId, position, ...payloadData }
-				})
-			})
-		)
-			.subscribe(console.log)
-	}
+	// constructor(private db: AngularFirestore) {
+	// this.itemsCollection = this.db.collection('categoryTable')
+	// this.items = this.itemsCollection.snapshotChanges().pipe(
+	// 	map(e => {
+	// 		return e.map(el => {
+	// 			const payloadData = el.payload.doc.data()
+	// 			const position = payloadData.position
+	// 			const firebaseId = el.payload.doc.id
+	// 			this.localItems.push({ firebaseId, position, ...payloadData })
+	// 			return { firebaseId, position, ...payloadData }
+	// 		})
+	// 	})
+	// )
+	// * Subscribe in Container components
+	// 	.subscribe(console.log)
+	// }
 
+	// * Container Component
 	databaseStateSetupIntialView() {
 		this.itemsCollection
 			.valueChanges()
@@ -72,12 +74,14 @@ export class TodoComponent implements OnInit, AfterViewInit {
 	}
 
 	ngOnInit() {
+		// * Container Component
 		this.databaseStateSetupIntialView()
 	}
 
-	ngAfterViewInit() {
-	}
+	// ngAfterViewInit() {
+	// }
 
+	// * Container / Presentation Component
 	onTypeUpdateTodo(row: TodoTask) {
 		// A View Child
 		let todoTasks = this.todoTasks.toArray()
@@ -93,6 +97,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		this.itemsCollection.doc(activeTaskFirebaseId).update({ task: activeTaskValue })
 	}
 
+	// * Container / Presentation Compoent 
 	onNewTaskSubmit() {
 		const task = this.newTaskInput.nativeElement.value
 		let newPositionId: number = _max(this.dataSource.data.map(t => t.position))
@@ -114,6 +119,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		this.newTaskInput.nativeElement.value = ''
 	}
 
+	// * Container / Presentation Component
 	removeTask(element: TodoTask) {
 		// Remove from view
 		this.dataSource.data = this.dataSource.data.filter(e => e.position !== element.position)
@@ -124,12 +130,15 @@ export class TodoComponent implements OnInit, AfterViewInit {
 			.catch(err => console.log(err))
 	}
 
+	// * Container / Presentation Component
 	/** Whether the number of selected elements matches the total number of rows. */
 	isAllSelected() {
 		const numSelected = this.selection.selected.length
 		const numRows = this.dataSource.data.length
 		return numSelected === numRows
 	}
+
+	// * Container / Presentation Component
 	/** Selects all rows if they are not all selected otherwise clear selection. */
 	masterToggle() {
 		console.log('master toggle', this.isAllSelected)
@@ -152,12 +161,14 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		}
 	}
 
+	// * Container / Presentation Component
 	isRowSelected(row) {
 		// Init this selects the rows
 		const rowIsSelected = this.selection.isSelected(row)
 		return rowIsSelected
 	}
 
+	// * Container / Presentation Component
 	onCheckboxSelection(row) {
 		const rowFirebaseId = this.localItems.filter(e => e.position === row.position)[0].firebaseId
 		const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
@@ -171,6 +182,7 @@ export class TodoComponent implements OnInit, AfterViewInit {
 		this.itemsCollection.doc(rowFirebaseId).update({ completed: rowIsSelected })
 	}
 
+	// * Container / Presentation Component
 	/** The label for the checkbox on the passed row */
 	checkboxLabel(row?: any): string {
 		if (!row) {
