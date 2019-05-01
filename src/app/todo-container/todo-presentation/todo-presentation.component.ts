@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChildren, ViewChild, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChildren, ViewChild, QueryList, Output, EventEmitter } from '@angular/core';
 import { TodoTask } from 'src/app/core/todo.service';
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
+import { orderBy as _orderby } from 'lodash'
 
 @Component({
   selector: 'app-todo-presentation',
@@ -13,6 +14,7 @@ export class TodoPresentationComponent implements OnInit {
   @ViewChildren('contentEditable') todoTasks: QueryList<any>
   @ViewChild('newTaskInput') newTaskInput: any
   @ViewChildren('positionRows') positionRows: QueryList<any>
+  updateTaskCompleteState: EventEmitter<any> = new EventEmitter()
   displayedColumns: string[] = ['select', 'position', 'task', 'remove']
   // dataSource = new MatTableDataSource<TodoTask>()
   dataSource: MatTableDataSource<TodoTask>
@@ -24,7 +26,14 @@ export class TodoPresentationComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() { }
+  ngOnInit() {
+
+    this.dataSource.data.filter(el => el.completed)
+      .forEach(el => this.selection.select(el))
+
+    // this.dataSource.data.forEach(el => this.selection.select(el))
+    // this.selection.select()
+  }
 
   onTypeUpdateTodo(row: TodoTask) {
     //   // A View Child
@@ -101,16 +110,22 @@ export class TodoPresentationComponent implements OnInit {
 
   onCheckboxSelection(row) {
     // const rowFirebaseId = this.localItems.filter(e => e.position === row.position)[0].firebaseId
-    console.log(this.dataSource.data, ' <<<<')
+
     const rowIsSelected = this.selection.isSelected(row) // Value to update with  2
 
-    // // Update datasource
-    // const x = this.dataSource.data.filter(el => el.position === row.position)[0]
-    // x.completed = rowIsSelected
+    // Update client side datasource
+    const taskInDataSource = this.dataSource.data.filter(el => el.position === row.position)[0]
+    taskInDataSource.completed = rowIsSelected
 
-    // this.dataSource.data = _orderby(this.dataSource.data, ['completed'], ['asc']);
+    // Sort Data Source
+    this.dataSource.data = _orderby(this.dataSource.data, ['completed'], ['asc']);
 
     // this.itemsCollection.doc(rowFirebaseId).update({ completed: rowIsSelected })
+    const latestDataSource = this.dataSource.data
+    console.log(this.tableName, ' @@@')
+    const updateDataForDb = { tableDocId: this.tableFirebaseId, tableName: this.tableName, newTaskDataSource: latestDataSource }
+    this.updateTaskCompleteState.emit(updateDataForDb)
+
   }
 
   /** The label for the checkbox on the passed row */

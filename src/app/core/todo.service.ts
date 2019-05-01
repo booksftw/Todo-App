@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export interface TodoTable {
-  tableFirebaseId: string
+  tableFirebaseId?: string
   tableName: string
   tasks: TodoTask[]
 }
@@ -42,4 +42,13 @@ export class TodoService {
     return this.todoTables$
   }
 
+  updateTaskComplete(tableDocId: string, tableName: string, newTaskDataSource: TodoTask[]) {
+    // Replace the entire task array with new one
+    console.log('SERVICE', tableDocId, tableName, newTaskDataSource)
+    // this.todoTablesCollection.doc(tableDocId).update({ tasks: newTaskDataSource })
+    const updatedTableData: TodoTable = { tableName: tableName, tasks: newTaskDataSource }
+    this.todoTablesCollection.doc(tableDocId).set(updatedTableData)
+      .then(e => console.log(e))
+      .catch(err => console.log(err))
+  }
 }
