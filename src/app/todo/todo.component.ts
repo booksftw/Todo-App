@@ -21,7 +21,6 @@ export interface CategoryTablePayloadContainer {
 	position: number
 	task: TodoTask
 }
-
 @Component({
 	selector: 'app-todo',
 	templateUrl: './todo.component.html',
