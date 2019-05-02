@@ -14,9 +14,10 @@ export class TodoPresentationComponent implements OnInit {
   @ViewChildren('contentEditable') todoTasks: QueryList<any>
   @ViewChild('newTaskInput') newTaskInput: any
   @ViewChildren('positionRows') positionRows: QueryList<any>
+
   updateTaskCompleteState: EventEmitter<any> = new EventEmitter()
-  
   addNewTask: EventEmitter<any> = new EventEmitter()
+  removeTaskDB: EventEmitter<any> = new EventEmitter()
 
   displayedColumns: string[] = ['select', 'position', 'task', 'remove']
   // dataSource = new MatTableDataSource<TodoTask>()
@@ -57,29 +58,34 @@ export class TodoPresentationComponent implements OnInit {
     const task = this.newTaskInput.nativeElement.value
     let newPositionId: number = _max(this.dataSource.data.map(t => t.position)) + 1
     const newTaskObject: TodoTask = { position: newPositionId, task, completed: false }
-    console.log('yo task', task, 'new Task Object', newTaskObject)
-
     // Add new task to list
     const newListData = [newTaskObject, ...this.dataSource.data]
-
     // Add new task to DB
-    // this.itemsCollection.add(newTaskObject)
-
+    const tableDocId = this.tableFirebaseId
+    const tableName = this.tableName
+    const newTaskDataSource = newListData
+    const data = { tableDocId, tableName, newTaskDataSource }
+    this.addNewTask.emit(data)
     // Update App View
     this.dataSource.data = newListData
-
-    // // Reset input html element
-    // this.newTaskInput.nativeElement.value = ''
+    // Reset input html element
+    this.newTaskInput.nativeElement.value = ''
   }
 
   removeTask(element: TodoTask) {
-    //   // Remove from view
-    //   this.dataSource.data = this.dataSource.data.filter(e => e.position !== element.position)
+    // Remove from view
+    this.dataSource.data = this.dataSource.data.filter(e => e.position !== element.position)
+    const tableDocId = this.tableFirebaseId
+    const tableName = this.tableName
+    const newTaskDataSource = this.dataSource.data
+    const data = { tableDocId, tableName, newTaskDataSource }
+    console.log(data)
+    this.removeTaskDB.emit(data)
 
-    //   const removedItemFirebaseId = this.localItems.filter(el => el.position === element.position)[0].firebaseId
-    //   // Remove From database
-    //   this.itemsCollection.doc(removedItemFirebaseId).delete()
-    //     .catch(err => console.log(err))
+    // const removedItemFirebaseId = this.localItems.filter(el => el.position === element.position)[0].firebaseId
+    // Remove From database
+    // this.itemsCollection.doc(removedItemFirebaseId).delete()
+    //   .catch(err => console.log(err))
   }
 
   isAllSelected() {

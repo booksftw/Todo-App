@@ -42,13 +42,40 @@ export class TodoService {
     return this.todoTables$
   }
 
-  updateTaskComplete(tableDocId: string, tableName: string, newTaskDataSource: TodoTask[]) {
-    // Replace the entire task array with new one
-    console.log('SERVICE', tableDocId, tableName, newTaskDataSource)
-    // this.todoTablesCollection.doc(tableDocId).update({ tasks: newTaskDataSource })
-    const updatedTableData: TodoTable = { tableName: tableName, tasks: newTaskDataSource }
-    this.todoTablesCollection.doc(tableDocId).set(updatedTableData)
-      .then(e => console.log(e))
-      .catch(err => console.log(err))
+  updateTableData(tableDocId: string, tableName: string, newTaskDataSource: TodoTask[], crudMethod: string) {
+    switch (crudMethod) {
+      case 'add':
+        console.log('adding to firebase', tableDocId, tableName, newTaskDataSource)
+        const updatedAddTableData: TodoTable = { tableName: tableName, tasks: newTaskDataSource }
+        this.todoTablesCollection.doc(tableDocId).set(updatedAddTableData)
+          .catch(err => console.log(err))
+        break;
+      case 'update':
+        const updatedUpdateTableData: TodoTable = { tableName: tableName, tasks: newTaskDataSource }
+        this.todoTablesCollection.doc(tableDocId).set(updatedUpdateTableData)
+          .catch(err => console.log(err))
+        break;
+      case 'remove':
+        console.log('remove from firebase', tableDocId, tableName, newTaskDataSource)
+        const updatedRemoveTableData: TodoTable = { tableName: tableName, tasks: newTaskDataSource }
+        this.todoTablesCollection.doc(tableDocId).set(updatedRemoveTableData)
+          .catch(err => console.log(err))
+        break;
+      default:
+        console.error("ERROR CRUD OPERATION NOT WORKING")
+        break;
+    }
   }
 }
+
+
+// updateTaskComplete(tableDocId: string, tableName: string, newTaskDataSource: TodoTask[]) {
+//   //   // Replace the entire task array with new one
+//   //   console.log('SERVICE', tableDocId, tableName, newTaskDataSource)
+//   //   // this.todoTablesCollection.doc(tableDocId).update({ tasks: newTaskDataSource })
+//   //   const updatedTableData: TodoTable = { tableName: tableName, tasks: newTaskDataSource }
+//   //   this.todoTablesCollection.doc(tableDocId).set(updatedTableData)
+//   //     .then(e => console.log(e))
+//   //     .catch(err => console.log(err))
+//   // }
+// }

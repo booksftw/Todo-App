@@ -3,6 +3,7 @@ import { TodoService, TodoTask, TodoTable } from '../core/todo.service';
 import { TodoHostDirective } from '../shared/todo-host.directive';
 import { TodoPresentationComponent } from './todo-presentation/todo-presentation.component'
 import { MatTableDataSource } from '@angular/material';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-todo-container',
@@ -23,6 +24,9 @@ export class TodoContainerComponent implements OnInit {
 
   initTodoTableComponents() {
     this.todoService.getAllTables()
+      .pipe(
+        take(1)
+      )
       .subscribe(arr => {
         arr.map(table => {
           const tableData: TodoTable = table
@@ -39,14 +43,23 @@ export class TodoContainerComponent implements OnInit {
     componentRef.instance.dataSource = new MatTableDataSource(data.tasks) // * Insert Intial data in there
     componentRef.instance.tableFirebaseId = data.tableFirebaseId
     componentRef.instance.tableName = data.tableName
+
     componentRef.instance.updateTaskCompleteState.subscribe(tableData => {
-      this.updateTaskCompleteState(tableData)
+      this.updateTodoTableInDatabase(tableData, 'update')
+    })
+    componentRef.instance.addNewTask.subscribe(tableData => {
+      this.updateTodoTableInDatabase(tableData, 'add')
+    })
+    componentRef.instance.removeTaskDB.subscribe(tableData => {
+      console.log('CONTAINER REMOVE FROM DB', tableData)
+      this.updateTodoTableInDatabase(tableData, 'remove')
     })
   }
 
-  updateTaskCompleteState(data) {
+  updateTodoTableInDatabase(data, method) {
+    console.log('CONTAINER', data)
     const { tableDocId, tableName, newTaskDataSource } = data
     console.log('data stuff', tableDocId, tableName, newTaskDataSource)
-    this.todoService.updateTaskComplete(tableDocId, tableName, newTaskDataSource)
+    this.todoService.updateTableData(tableDocId, tableName, newTaskDataSource, method)
   }
 }

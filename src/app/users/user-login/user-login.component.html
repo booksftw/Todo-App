@@ -3,9 +3,9 @@
 	<button (click)="logout()">Logout</button>
 </div>
 <ng-template #showLogin>
-	<p>Please login.</p>
-	<button (click)="login()">Login with Google</button>
+	<h1>Please login to get access to the app.</h1>
+	<button mat-raised-button (click)="login()">Login with Google</button>
 </ng-template>
 
 <!-- <app-todo *ngIf="userLoggedIn"></app-todo> -->
-<app-todo-container></app-todo-container>
+<app-todo-container *ngIf="userLoggedIn"></app-todo-container>
