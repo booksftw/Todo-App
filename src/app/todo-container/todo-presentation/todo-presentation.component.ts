@@ -56,7 +56,12 @@ export class TodoPresentationComponent implements OnInit {
 
   onNewTaskSubmit() {
     const task = this.newTaskInput.nativeElement.value
-    let newPositionId: number = _max(this.dataSource.data.map(t => t.position)) + 1
+    let newPositionId: number
+    if (this.dataSource.data.length > 0) {
+      newPositionId = _max(this.dataSource.data.map(t => t.position)) + 1
+    } else {
+      newPositionId = 1
+    }
     const newTaskObject: TodoTask = { position: newPositionId, task, completed: false }
     // Add new task to list
     const newListData = [newTaskObject, ...this.dataSource.data]

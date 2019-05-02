@@ -6,8 +6,15 @@
 <ng-template appTodoHost></ng-template>
 
 <div id="add-category-container">
-	<button id="add-category-btn" mat-raised-button>
+	<button id="add-category-btn" mat-raised-button (click)="addNewTodoTable()">
 		+ <br />
 		ADD CATEGORY
 	</button>
+	<input
+		#newCategoryNameInput
+		id="addInput"
+		type="text"
+		matInput
+		placeholder="ENTER CATEGORY NAME"
+	/>
 </div>

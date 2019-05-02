@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ComponentFactoryResolver, Type } from '@angular/core';
+import { Component, OnInit, ViewChild, ComponentFactoryResolver, Type, ElementRef } from '@angular/core';
 import { TodoService, TodoTask, TodoTable } from '../core/todo.service';
 import { TodoHostDirective } from '../shared/todo-host.directive';
 import { TodoPresentationComponent } from './todo-presentation/todo-presentation.component'
@@ -12,6 +12,7 @@ import { take } from 'rxjs/operators';
 })
 export class TodoContainerComponent implements OnInit {
   @ViewChild(TodoHostDirective) todoHostContainer: TodoHostDirective
+  @ViewChild('newCategoryNameInput') newCategoryNameInput
 
   constructor(
     private todoService: TodoService,
@@ -61,5 +62,19 @@ export class TodoContainerComponent implements OnInit {
     const { tableDocId, tableName, newTaskDataSource } = data
     console.log('data stuff', tableDocId, tableName, newTaskDataSource)
     this.todoService.updateTableData(tableDocId, tableName, newTaskDataSource, method)
+  }
+
+
+  addNewTodoTable() {
+    // export interface TodoTable {
+    //   tableFirebaseId?: string
+    //   tableName: string
+    //   tasks: TodoTask[]
+    // }
+    const newTableCategoryName = this.newCategoryNameInput.nativeElement.value
+    const data = { tableName: newTableCategoryName, tasks: [] }
+    this.renderTodoComponent(TodoPresentationComponent, data)
+
+    this.todoService.addTodoTable(data)
   }
 }

@@ -41,7 +41,6 @@ export class TodoService {
   getAllTables(): Observable<TodoTable[]> {
     return this.todoTables$
   }
-
   updateTableData(tableDocId: string, tableName: string, newTaskDataSource: TodoTask[], crudMethod: string) {
     switch (crudMethod) {
       case 'add':
@@ -65,6 +64,10 @@ export class TodoService {
         console.error("ERROR CRUD OPERATION NOT WORKING")
         break;
     }
+  }
+
+  addTodoTable(todoTableData: TodoTable) {
+    this.todoTablesCollection.add(todoTableData)
   }
 }
 

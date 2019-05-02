@@ -1,27 +1,13 @@
-# Nztodoist
+# Todo List App
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
+Developement Notes: Where I left off. This app is in good shape.
+It's structured in a maintainable way and modularize. If you want to start up
+again start in the presentation component. The presentation component creates a table but the new tasks for that table is null. I think the solution will probably
+generating your UID to post to the db since firebase doesn't give auto id until
+it's posted in the database.
 
-## Development server
+You can also merge the styling so the tables are together and include drag features.
+This app is almost done but the upgrading and polishing never ends, because i'm not selling this my work here is done.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+My learning objectives are complete and i'm moving on to a new project that'll challenge me instead of polishing this
+one up.
